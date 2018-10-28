@@ -19,16 +19,17 @@ class Page(RenderEntity):
         self.renderer = md_renderer
 
     def to_dict(self):
-        return {
+        data =  {
             'site_root': self.site_root,
             'page_type': self.page_type,
-            'data': self.data,
             'source': self.source,
             'target': self.target,
             'source_path': self.source_path,
             'target_path': self.target_path,
             'content': self.content,
         }
+        data.update(self.data)
+        return data
 
     def convert_to_template_html(self):
         self.content = self.renderer.convert(self.content)
@@ -40,7 +41,7 @@ class Page(RenderEntity):
 
     def render(self, environment):
         self.convert_to_template_html()
-
+        print("Rendering data", self.data)
         try:
             with open(self.target_path, "w") as target_file:
                 target_file.write(

@@ -10,6 +10,9 @@ class PlainResource(RenderEntity):
         self.target_path = os.path.abspath(os.path.join(self.site_root, self.target))
 
     def render(self, environment):
+        directory = os.path.split(self.target_path)[0]
+        os.makedirs(directory, exist_ok=True)
+
         if os.path.isdir(self.source_path):
             shutil.rmtree(self.target_path, ignore_errors=True)
             shutil.copytree(self.source_path, self.target_path)

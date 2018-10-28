@@ -46,12 +46,15 @@ class Site(object):
                     processed_entities.append(entity_copy)
             else:
                 processed_entities.append(entity)
-            return processed_entities
+
+        return processed_entities
 
     def _parse(self, data):
         """Load pages to be generated"""
         try:
-            self.pages = [Page(self.markdown_renderer, self.root, **page) for page in self.process_wildcards(data["pages"])]
+            processed_pages = self.process_wildcards(data["pages"])
+            print(processed_pages)
+            self.pages = [Page(self.markdown_renderer, self.root, **page) for page in processed_pages]
             self.templates = [os.path.join(self.root, template) for template in data["templates"]]
             self.resources = [PlainResource(self.root, **resource) for resource in data["resources"]]
         except KeyError as ke:
