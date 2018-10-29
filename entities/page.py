@@ -1,4 +1,4 @@
-from render_entity import RenderEntity
+from entities.render_entity import RenderEntity
 import errno
 import os
 

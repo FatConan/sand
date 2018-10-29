@@ -1,23 +1,6 @@
-"""
-{"sites": [
-    {
-        "root": "example",
-        "pages": [
-            {
-                "source": "./README.md",
-                "target": "./README.html"
-            }
-        ],
-        "templates": [
-            "templates"
-        ]
-    }
-]}
-"""
 from config.config_loader import ConfigLoader
 import sys
 import os
-
 
 def main(args):
     if len(args) <= 1:
@@ -29,6 +12,7 @@ def main(args):
     sites = ConfigLoader().load(site_root)
     for site in sites:
         site.render()
+
 
     return 0
 

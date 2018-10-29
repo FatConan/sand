@@ -1,0 +1,14 @@
+{"sites": [
+    {
+        "root": "example",
+        "pages": [
+            {
+                "source": "./pages/*.md",
+                "target": "./output/*.html"
+            }
+        ],
+        "templates": [
+            "templates"
+        ]
+    }
+]}

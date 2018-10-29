@@ -1,5 +1,5 @@
-from page import Page
-from resource import PlainResource
+from entities.page import Page
+from entities.resource import PlainResource
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 import markdown
 import os
@@ -22,8 +22,6 @@ class Site(object):
                 loader=FileSystemLoader(self.templates),
                 autoescape=select_autoescape(["html", "xml"])
         )
-
-        self.render()
 
     def __repr__(self):
         return "SiteConfig(%r, %r)" % (self.root, self.data)
@@ -63,6 +61,7 @@ class Site(object):
 
     def render(self):
         """Render Markdown to HTML and extract YAML metadata"""
+        print(self.pages)
         for page in self.pages:
             page.render(self.environment)
 
