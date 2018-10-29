@@ -4,8 +4,8 @@ import os
 
 
 class PlainResource(RenderEntity):
-    def __init__(self, site_root, source, target, resource_type=None):
-        super().__init__(site_root, source, target)
+    def __init__(self, site_root, output_root, source, target, resource_type=None):
+        super().__init__(site_root, output_root, source, target)
         self.source_path = os.path.abspath(os.path.join(self.site_root, self.source))
         self.target_path = os.path.abspath(os.path.join(self.site_root, self.target))
 

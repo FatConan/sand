@@ -4,6 +4,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 import markdown
 import os
 import glob
+import shutil
 
 
 class Site(object):
@@ -14,6 +15,7 @@ class Site(object):
         self.pages = []
         self.index = []
         self.root = root
+        self.output_root = os.path.join(self.root, "output")
         self.templates = []
         self.resources = []
         self.data = data
@@ -24,14 +26,16 @@ class Site(object):
         )
 
     def __repr__(self):
-        return "SiteConfig(%r, %r)" % (self.root, self.data)
+        return "SiteConfig(%r, %r, %r)" % (self.root, self.output_root, self.data)
 
     def process_wildcards(self, entities):
         processed_entities = []
         for entity in entities:
             if "*" in entity.get("source", "") and "*" in entity.get("target", ""):
                 source = entity.get("source", "")
-                for list_source in glob.glob(os.path.abspath(os.path.join(self.root, entity.get("source")))):
+                listed_sources = glob.glob(os.path.abspath(os.path.join(self.root, entity.get("source"))))
+
+                for list_source in listed_sources:
                     ext = source.split("*")[-1]
                     filename = list_source.split("/")[-1].replace(ext, "")
                     replace_target = entity.get("target", "").replace("*", filename)
@@ -51,15 +55,18 @@ class Site(object):
         """Load pages to be generated"""
         try:
             processed_pages = self.process_wildcards(data["pages"])
-            self.pages = [Page(self.markdown_renderer, self.root, **page) for page in processed_pages]
+            self.pages = [Page(self.markdown_renderer, self.root, self.output_root, **page) for page in processed_pages]
             self.templates = [os.path.join(self.root, template) for template in data["templates"]]
-            self.resources = [PlainResource(self.root, **resource) for resource in data["resources"]]
+            self.resources = [PlainResource(self.root, self.output_root, **resource) for resource in data["resources"]]
         except KeyError as ke:
             if ke is 'templates':
                 print("No templates found for %s" % (data["site"]))
+            elif ke is 'resources':
+                print("No resources found for %s" % (data['site']))
 
     def render(self):
-        """Render Markdown to HTML and extract YAML metadata"""
+        shutil.rmtree(os.path.abspath(self.output_root), ignore_errors=True)
+
         for page in self.pages:
             page.render(self.environment)
 

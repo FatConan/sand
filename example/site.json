@@ -4,7 +4,7 @@
         "pages": [
             {
                 "source": "./pages/*.md",
-                "target": "./output/*.html"
+                "target": "./*.html"
             }
         ],
         "templates": [

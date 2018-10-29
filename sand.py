@@ -10,9 +10,9 @@ def main(args):
     site_root = args[1] if os.path.isdir(args[1]) else None
 
     sites = ConfigLoader().load(site_root)
+
     for site in sites:
         site.render()
-
 
     return 0
 
