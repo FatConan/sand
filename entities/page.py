@@ -40,15 +40,15 @@ class Page(RenderEntity):
                 self.data[key] = value
 
     def render(self, environment):
+        print("Render %s" % self)
         self.convert_to_template_html()
-        print("Rendering data", self.data)
         try:
             with open(self.target_path, "w") as target_file:
                 target_file.write(
                     environment.get_template(self.data["template"]).render(self.to_dict())
                 )
         except TemplateNotFound as tnf:
-            print(tnf)
+            print("Requested template (%s) not found, skipping" % tnf)
         except KeyError as ke:
             if str(ke) == '\'template\'':
                 print('Missing template, rendering markdown only')

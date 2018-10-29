@@ -51,7 +51,6 @@ class Site(object):
         """Load pages to be generated"""
         try:
             processed_pages = self.process_wildcards(data["pages"])
-            print(processed_pages)
             self.pages = [Page(self.markdown_renderer, self.root, **page) for page in processed_pages]
             self.templates = [os.path.join(self.root, template) for template in data["templates"]]
             self.resources = [PlainResource(self.root, **resource) for resource in data["resources"]]
@@ -61,7 +60,6 @@ class Site(object):
 
     def render(self):
         """Render Markdown to HTML and extract YAML metadata"""
-        print(self.pages)
         for page in self.pages:
             page.render(self.environment)
 

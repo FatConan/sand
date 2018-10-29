@@ -10,6 +10,7 @@ class PlainResource(RenderEntity):
         self.target_path = os.path.abspath(os.path.join(self.site_root, self.target))
 
     def render(self, environment):
+        print("Render %s" % self)
         directory = os.path.split(self.target_path)[0]
         os.makedirs(directory, exist_ok=True)
 
