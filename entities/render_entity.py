@@ -1,7 +1,6 @@
 class RenderEntity(object):
-    def __init__(self, site_root, output_root, source, target):
-        self.site_root = site_root
-        self.output_root = output_root
+    def __init__(self, site, source, target):
+        self.site = site
         self.source = source
         self.target = target
 
