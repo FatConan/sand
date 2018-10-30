@@ -38,12 +38,14 @@ class Site(object):
         for entity in entities:
             source = entity.get("source", "")
             target = entity.get("target", "")
+            source_match =  self.wildcard_re.match(source)
+            target_match = self.wildcard_re.match(target)
 
-            if self.wildcard_re.match(source) and self.wildcard_re.match(target):
+            if source_match and target_match:
                 listed_sources = glob.glob(os.path.abspath(os.path.join(self.root, source)))
 
                 for list_source in listed_sources:
-                    pre, post = self.wildcard_re.match(source).groups()
+                    pre, post = source_match.groups()
                     filename = list_source.split("/")[-1].replace(post, "")
 
                     replace_target = target.replace("*", filename)
@@ -54,6 +56,8 @@ class Site(object):
                     entity_copy["target"] = replace_target
 
                     processed_entities.append(entity_copy)
+            elif source_match or target_match:
+                print("Badly formed source and target pairing, %s and %s", (source, target))
             else:
                 processed_entities.append(entity)
 
