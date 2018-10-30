@@ -1,4 +1,5 @@
 .idea
 venv
+*.pyc
 __pycache__
 example/output

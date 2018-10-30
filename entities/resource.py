@@ -7,7 +7,7 @@ class PlainResource(RenderEntity):
     def __init__(self, site_root, output_root, source, target, resource_type=None):
         super().__init__(site_root, output_root, source, target)
         self.source_path = os.path.abspath(os.path.join(self.site_root, self.source))
-        self.target_path = os.path.abspath(os.path.join(self.site_root, self.target))
+        self.target_path = os.path.abspath(os.path.join(self.output_root, self.target))
 
     def render(self, environment):
         print("Render %s" % self)
