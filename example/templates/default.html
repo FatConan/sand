@@ -1,9 +1,13 @@
 <!DOCTYPE html>
 <html>
     <head>
-
+        <meta charset="UTF-8" />
+        <link rel="stylesheet" type="text/css" href="/resources/css/style.css" />
     </head>
     <body>
         {% block content %}{{ content|safe }}{% endblock %}
+        <footer>
+            <p>Theme <a href="http://markedstyle.com/styles/github">GitHub</a> by <a href="http://markedstyle.com/authors/4">Brett Terpstra<a/> from <a href="http://markedstyle.com">markedstyle.com</a></p>
+        </footer>
     </body>
 </html>
