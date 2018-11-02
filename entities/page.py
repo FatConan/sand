@@ -12,22 +12,29 @@ class Page(RenderEntity):
 
         self.source_path = os.path.abspath(os.path.join(self.site.root, self.source))
         self.target_path = os.path.abspath(os.path.join(self.site.output_root, self.target))
+        self.target_url = os.path.abspath(os.path.join("/", self.target))
+        self.target_url_parts = os.path.split(self.target_url)
 
         self.content = open(self.source_path, "r").read()
+        self.convert_to_template_html()
 
     def to_dict(self):
         data =  {
-            'site': self.site,
-            'site_root': self.site.root,
-            'output_root': self.site.output_root,
+            'GLOBALS': {
+                'site': self.site,
+                'site_root': self.site.root,
+                'output_root': self.site.output_root,
+            },
+            'DATA': self.data,
             'page_type': self.page_type,
             'source': self.source,
             'target': self.target,
             'source_path': self.source_path,
             'target_path': self.target_path,
+            'target_url': self.target_url,
+            'target_url_parts': self.target_url_parts,
             'content': self.content,
         }
-        data.update(self.data)
         return data
 
     def convert_to_template_html(self):
@@ -40,8 +47,6 @@ class Page(RenderEntity):
 
     def render(self, environment):
         print("Render %s" % self)
-
-        self.convert_to_template_html()
 
         try:
             os.makedirs(os.path.split(self.target_path)[0], exist_ok=True)

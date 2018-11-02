@@ -16,11 +16,17 @@ class Site(object):
             extensions=['markdown.extensions.meta', 'markdown.extensions.toc']
         )
         self.pages = []
+        self.page_reference = {}
         self.templates = []
         self.resources = []
 
         self.root = root
-        self.output_root = os.path.join(self.root, "output")
+
+        output_relative = data.get("output_root", "output")
+        if output_relative:
+            self.output_root = os.path.join(self.root, output_relative)
+        else:
+            self.output_root = os.path.join(self.root, "output")
 
         self.data = data
         self._parse(data)
@@ -67,8 +73,17 @@ class Site(object):
         """Load pages to be generated"""
         try:
             self.templates = [os.path.join(self.root, template) for template in data["templates"]]
+
             processed_pages = self.process_wildcards(data["pages"])
-            self.pages = [Page(self, **page) for page in processed_pages]
+            for page_dict in processed_pages:
+                page = Page(self, **page_dict)
+                self.pages.append(page)
+                path, file = page.target_url_parts
+                try:
+                    self.page_reference[path].append((file, page))
+                except KeyError:
+                    self.page_reference[path] = [(file, page), ]
+
             self.resources = [PlainResource(self, **resource) for resource in data["resources"]]
         except KeyError as ke:
             if ke is 'templates':

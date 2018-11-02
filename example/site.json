@@ -1,14 +1,21 @@
 {"sites": [
     {
         "root": "example",
+        "output_root": "output",
         "pages": [
             {
-                "source": "./pages/*.md",
-                "target": "./*.html"
+                "source": "../README.md",
+                "target": "./index.html"
             }
         ],
         "templates": [
             "templates"
+        ],
+        "resources": [
+            {
+                "source": "./resources",
+                "target": "./resources"
+            }
         ]
     }
 ]}
