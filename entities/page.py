@@ -15,17 +15,20 @@ class Page(RenderEntity):
         self.target_url = os.path.abspath(os.path.join("/", self.target))
         self.target_url_parts = os.path.split(self.target_url)
 
-        self.content = open(self.source_path, "r").read()
+        self.raw_content = open(self.source_path, "r").read()
+        self.content = None
         self.convert_to_template_html()
 
-    def to_dict(self):
+    def to_dict(self, environment):
         data =  {
             'GLOBALS': {
                 'site': self.site,
                 'site_root': self.site.root,
                 'output_root': self.site.output_root,
             },
+
             'DATA': self.data,
+
             'page_type': self.page_type,
             'source': self.source,
             'target': self.target,
@@ -33,12 +36,13 @@ class Page(RenderEntity):
             'target_path': self.target_path,
             'target_url': self.target_url,
             'target_url_parts': self.target_url_parts,
-            'content': self.content,
         }
+        data["content"] = environment.from_string(self.raw_content).render(data)
         return data
 
     def convert_to_template_html(self):
-        self.content = self.site.renderer.convert(self.content)
+        #First render out the markdown and collection the YAML data
+        self.raw_content = self.site.renderer.convert(self.raw_content)
         for key, value in self.site.renderer.Meta.items():
             if isinstance(value, list) and len(value) == 1:
                 self.data[key] = value[0]
@@ -52,13 +56,18 @@ class Page(RenderEntity):
             os.makedirs(os.path.split(self.target_path)[0], exist_ok=True)
             with open(self.target_path, "w") as target_file:
                 target_file.write(
-                    environment.get_template(self.data["template"]).render(self.to_dict())
+                    environment.get_template(self.data["template"]).render(self.to_dict(environment))
                 )
         except TemplateNotFound as tnf:
             print("Requested template (%s) not found, skipping" % tnf)
         except KeyError as ke:
             if str(ke) == '\'template\'':
                 print('Missing template, rendering markdown only')
-                environment.from_string(self.content).render(self.to_dict())
+                os.makedirs(os.path.split(self.target_path)[0], exist_ok=True)
+                with open(self.target_path, "w") as target_file:
+                    target_file.write(
+                        self.to_dict(environment)["content"]
+                    )
+
             else:
                 raise

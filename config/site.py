@@ -31,11 +31,6 @@ class Site(object):
         self.data = data
         self._parse(data)
 
-        self.environment = Environment(
-                loader=FileSystemLoader(self.templates),
-                autoescape=select_autoescape(["html", "xml"])
-        )
-
     def __repr__(self):
         return "SiteConfig(%r, %r, %r)" % (self.root, self.output_root, self.data)
 
@@ -73,11 +68,16 @@ class Site(object):
         """Load pages to be generated"""
         try:
             self.templates = [os.path.join(self.root, template) for template in data["templates"]]
+            self.environment = Environment(
+                loader=FileSystemLoader(self.templates),
+                autoescape=select_autoescape(["html", "xml"])
+            )
 
             processed_pages = self.process_wildcards(data["pages"])
             for page_dict in processed_pages:
                 page = Page(self, **page_dict)
                 self.pages.append(page)
+
                 path, file = page.target_url_parts
                 try:
                     self.page_reference[path].append((file, page))
