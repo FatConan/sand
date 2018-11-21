@@ -1,5 +1,4 @@
 from config.config_loader import ConfigLoader
-import sys
 import os
 import click
 
