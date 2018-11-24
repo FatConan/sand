@@ -1,21 +1,23 @@
-{"sites": [
-    {
-        "root": "example",
-        "output_root": "output",
-        "pages": [
-            {
-                "source": "../README.md",
-                "target": "./index.html"
-            }
-        ],
-        "templates": [
-            "templates"
-        ],
-        "resources": [
-            {
-                "source": "./resources",
-                "target": "./resources"
-            }
-        ]
-    }
-]}
+{
+    "sites": [
+        {
+            "root": "example",
+            "pages": [
+                {
+                    "source": "../README.md",
+                    "target": "./index.html"
+                }
+            ],
+            "templates": [
+                "templates"
+            ],
+            "resources": [
+                {
+                    "source": "resources",
+                    "target": "./resources"
+                }
+            ]
+        }
+    ]
+}
+

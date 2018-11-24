@@ -67,7 +67,9 @@ class Site(object):
     def _parse(self, data):
         """Load pages to be generated"""
         try:
-            self.templates = [os.path.join(self.root, template) for template in data["templates"]]
+            self.templates = [os.path.join(self.root, template) for template in data.get("templates", [])]
+            for t in self.templates:
+                print("Found template %s" % t)
             self.environment = Environment(
                 loader=FileSystemLoader(self.templates),
                 autoescape=select_autoescape(["html", "xml"])
@@ -84,7 +86,7 @@ class Site(object):
                 except KeyError:
                     self.page_reference[path] = [(file, page), ]
 
-            self.resources = [PlainResource(self, **resource) for resource in data["resources"]]
+            self.resources = [PlainResource(self, **resource) for resource in data.get("resources", [])]
         except KeyError as ke:
             if ke is 'templates':
                 print("No templates found for %s" % (data["site"]))
