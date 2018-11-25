@@ -156,7 +156,8 @@ the `DATA` object.  In addition to this, every rendering phase is also provided 
 regarding the project as a whole.
 
 The `GLOBALS` currently is a dictionary with three elements: 
-`site_root`: the root folder of the project
-`output_root`: the output folder of the project
-`site`: the site object as defined in the `site.py` file that contains the page_reference which is a path-indexed dictionary of all the project's pages and metadata.
+
+- `site_root`: the root folder of the project
+- `output_root`: the output folder of the project
+- `site`: the site object as defined in the `site.py` file that contains the page_reference which is a path-indexed dictionary of all the project's pages and metadata.
  
