@@ -13,8 +13,8 @@ This **README** serves as both documentation for this tool as well as an example
 If looking at this in Github you'll notice
 that this file is rendering with the line:
 
-```yaml
-template: default.html
+```
+title: Sand Documentation template: default.html
 ```
 
 at the start of the document. This is part of the metadata required by **Sand** to render this page (written in YAML). The rest of the required
@@ -132,5 +132,19 @@ You can build it by running:
 ```
 python3 sand.py example
 ```
+
+## Advanced Usage
+
+`Sand` allows a Jinja pass to be performed on the markdown allowing you to (carefully) mix your markdown content with Jinja directives.
+When activated, the markdown content will receive a secondary Jinja rendering pass in which any Jinja directives will be processed.
+When processed they will be provided access to all of the same DATA and GLOBAL values as all the other Jinja rendering phase.
+
+This feature can be enabled by including:
+
+```
+jinja_pass: True
+```
+
+as part of your YAML header for any required pages.
 
  
