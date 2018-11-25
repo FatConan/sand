@@ -135,6 +135,8 @@ python3 sand.py example
 
 ## Advanced Usage
 
+### Content Jinja Pass
+
 `Sand` allows a Jinja pass to be performed on the markdown allowing you to (carefully) mix your markdown content with Jinja directives.
 When activated, the markdown content will receive a secondary Jinja rendering pass in which any Jinja directives will be processed.
 When processed they will be provided access to all of the same DATA and GLOBAL values as all the other Jinja rendering phase.
@@ -147,4 +149,14 @@ jinja_pass: True
 
 as part of your YAML header for any required pages.
 
+### GLOBALS
+
+As mentioned previously a dictionary of the data passed from the YAML into the content/template of each page may be accessed through
+the `DATA` object.  In addition to this, every rendering phase is also provided access to a `GLOBALS` object that contains data
+regarding the project as a whole.
+
+The `GLOBALS` currently is a dictionary with three elements: 
+`site_root`: the root folder of the project
+`output_root`: the output folder of the project
+`site`: the site object as defined in the `site.py` file that contains the page_reference which is a path-indexed dictionary of all the project's pages and metadata.
  
