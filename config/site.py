@@ -9,7 +9,7 @@ import re
 
 
 class Site(object):
-    def __init__(self, root, data):
+    def __init__(self, root, site_data):
         self.wildcard_re = re.compile("([^\*]*)\*(\..+)")
 
         self.renderer = markdown.Markdown(
@@ -22,24 +22,24 @@ class Site(object):
 
         self.root = root
 
-        output_relative = data.get("output_root", "output")
+        output_relative = site_data.get("output_root", "output")
         if output_relative:
             self.output_root = os.path.join(self.root, output_relative)
         else:
             self.output_root = os.path.join(self.root, "output")
 
-        self.data = data
-        self._parse(data)
+        self.site_data = site_data
+        self._parse(site_data)
 
     def __repr__(self):
-        return "SiteConfig(%r, %r, %r)" % (self.root, self.output_root, self.data)
+        return "SiteConfig(%r, %r, %r)" % (self.root, self.output_root, self.site_data)
 
     def process_wildcards(self, entities):
         processed_entities = []
         for entity in entities:
             source = entity.get("source", "")
             target = entity.get("target", "")
-            source_match =  self.wildcard_re.match(source)
+            source_match = self.wildcard_re.match(source)
             target_match = self.wildcard_re.match(target)
 
             if source_match and target_match:

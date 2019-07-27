@@ -2,15 +2,26 @@ import json
 import errno
 import os
 from config.site import Site
-
+import sys
 
 class ConfigLoader(object):
     site_config_file = "site.json"
 
     def __init__(self):
-        pass
+       pass
 
     def load(self, path):
+        self.site_clazz = Site
+
+        extensions_module = os.path.join(path, "sand/")
+        if os.path.exists(extensions_module):
+            sys.path.append(os.path.abspath(extensions_module))
+            from extensions import SiteExt
+            class Extended(Site, SiteExt):
+                pass
+
+            self.site_clazz = Extended
+
         configs = []
         try:
             json_data = json.loads(
@@ -24,7 +35,7 @@ class ConfigLoader(object):
 
         try:
             for site_data in json_data["sites"]:
-                configs.append(Site(path, site_data))
+                configs.append(self.site_clazz(path, site_data))
         except KeyError:
             pass
 

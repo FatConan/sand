@@ -57,7 +57,6 @@ This is a new sand site.
 
 """
 
-
 @click.command(context_settings={"ignore_unknown_options": True})
 @click.argument('project_location')
 @click.option("--page", nargs=1, default=None, help="Generate a new page in the provided site")

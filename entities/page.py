@@ -8,7 +8,7 @@ class Page(RenderEntity):
     def __init__(self, site, source, target, page_type=None):
         super().__init__(site, source, target)
         self.page_type = page_type
-        self.data = {}
+        self.page_data = {}
 
         self.source_path = os.path.abspath(os.path.join(self.site.root, self.source))
         self.target_path = os.path.abspath(os.path.join(self.site.output_root, self.target))
@@ -27,7 +27,7 @@ class Page(RenderEntity):
                 'output_root': self.site.output_root,
             },
 
-            'DATA': self.data,
+            'DATA': self.page_data,
 
             'page_type': self.page_type,
             'source': self.source,
@@ -37,20 +37,23 @@ class Page(RenderEntity):
             'target_url': self.target_url,
             'target_url_parts': self.target_url_parts,
         }
-        if self.data.get("jinja_pass", False):
+        if self.page_data.get("jinja_pass", False):
             data["content"] = environment.from_string(self.raw_content).render(data)
         else:
             data["content"] = self.raw_content
         return data
 
+    def data(self, key, default=None, conversion=lambda x: x):
+        return conversion(self.page_data.get(key, default))
+
     def convert_to_template_html(self):
-        #First render out the markdown and collection the YAML data
+        # First render out the markdown and collection the YAML data
         self.raw_content = self.site.renderer.convert(self.raw_content)
         for key, value in self.site.renderer.Meta.items():
             if isinstance(value, list) and len(value) == 1:
-                self.data[key] = value[0]
+                self.page_data[key] = value[0]
             else:
-                self.data[key] = value
+                self.page_data[key] = value
 
     def render(self, environment):
         print("Render %s" % self)
@@ -59,7 +62,7 @@ class Page(RenderEntity):
             os.makedirs(os.path.split(self.target_path)[0], exist_ok=True)
             with open(self.target_path, "w") as target_file:
                 target_file.write(
-                    environment.get_template(self.data["template"]).render(self.to_dict(environment))
+                    environment.get_template(self.page_data["template"]).render(self.to_dict(environment))
                 )
         except TemplateNotFound as tnf:
             print("Requested template (%s) not found, skipping" % tnf)
