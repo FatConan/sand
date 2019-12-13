@@ -4,23 +4,26 @@ import os
 from config.site import Site
 import sys
 
+
 class ConfigLoader(object):
     site_config_file = "site.json"
 
     def __init__(self):
-       pass
-
-    def load(self, path):
         self.site_clazz = Site
 
+    def load(self, path):
         extensions_module = os.path.join(path, "sand/")
         if os.path.exists(extensions_module):
             sys.path.append(os.path.abspath(extensions_module))
-            from extensions import SiteExt
-            class Extended(Site, SiteExt):
+            try:
+                from extensions import SiteExt
+            except ImportError:
                 pass
+            else:
+                class Extended(Site, SiteExt):
+                    pass
 
-            self.site_clazz = Extended
+                self.site_clazz = Extended
 
         configs = []
         try:
@@ -35,6 +38,7 @@ class ConfigLoader(object):
 
         try:
             for site_data in json_data["sites"]:
+                os.path.join(path, site_data.get("root"))
                 configs.append(self.site_clazz(path, site_data))
         except KeyError:
             pass
