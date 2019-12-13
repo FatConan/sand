@@ -1,6 +1,3 @@
-title: Sand Documentation
-template: default.html
-
 # Sand : A simple static site generator
 
 **Sand** is a static site generator based heavily on an early version of [Stone](https://github.com/neuralsandwich/stone) by

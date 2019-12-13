@@ -4,6 +4,10 @@
             "root": "example",
             "pages": [
                 {
+                    "config": {
+                        "title": "Sand Documentation",
+                        "template": "default.html"
+                    },
                     "source": "../README.md",
                     "target": "./index.html"
                 }

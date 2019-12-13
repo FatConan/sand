@@ -5,10 +5,11 @@ from jinja2.exceptions import TemplateNotFound
 
 
 class Page(RenderEntity):
-    def __init__(self, site, source, target, page_type=None):
+    def __init__(self, site, source, target, page_type=None, config={}): #itle=None, template=None, page_type=None):
         super().__init__(site, source, target)
         self.page_type = page_type
         self.page_data = {}
+        self.page_data.update(config)
 
         self.source_path = os.path.abspath(os.path.join(self.site.root, self.source))
         self.target_path = os.path.abspath(os.path.join(self.site.output_root, self.target))
