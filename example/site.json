@@ -1,7 +1,7 @@
 {
     "sites": [
         {
-            "root": "example",
+            "root": ".",
             "pages": [
                 {
                     "config": {
