@@ -20,7 +20,7 @@ class Site(object):
         self.templates = []
         self.resources = []
 
-        self.root = root
+        self.root = os.path.join(root, site_data.get("root"))
 
         output_relative = site_data.get("output_root", "output")
         if output_relative:
@@ -36,6 +36,7 @@ class Site(object):
 
     def process_wildcards(self, entities):
         processed_entities = []
+
         for entity in entities:
             source = entity.get("source", "")
             target = entity.get("target", "")
@@ -44,7 +45,6 @@ class Site(object):
 
             if source_match and target_match:
                 listed_sources = glob.glob(os.path.abspath(os.path.join(self.root, source)))
-
                 for list_source in listed_sources:
                     pre, post = source_match.groups()
                     filename = list_source.split("/")[-1].replace(post, "")
@@ -55,7 +55,6 @@ class Site(object):
                     entity_copy = entity.copy()
                     entity_copy["source"] = replace_source
                     entity_copy["target"] = replace_target
-
                     processed_entities.append(entity_copy)
             elif source_match or target_match:
                 print("Badly formed source and target pairing, %s and %s", (source, target))
