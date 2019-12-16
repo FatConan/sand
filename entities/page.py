@@ -33,6 +33,8 @@ class Page(RenderEntity):
             'page_type': self.page_type,
             'source': self.source,
             'target': self.target,
+            'source_file': self.source_file,
+            'target_file': self.target_file,
             'source_path': self.source_path,
             'target_path': self.target_path,
             'target_url': self.target_url,
