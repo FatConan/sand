@@ -65,32 +65,27 @@ class Site(object):
 
     def _parse(self, data):
         """Load pages to be generated"""
-        try:
-            self.templates = [os.path.join(self.root, template) for template in data.get("templates", [])]
-            for t in self.templates:
-                print("Found template %s" % t)
-            self.environment = Environment(
-                loader=FileSystemLoader(self.templates),
-                autoescape=select_autoescape(["html", "xml"])
-            )
+        self.templates = [os.path.join(self.root, template) for template in data.get("templates", [])]
+        for t in self.templates:
+            print("Found template %s" % t)
 
-            processed_pages = self.process_wildcards(data["pages"])
-            for page_dict in processed_pages:
-                page = Page(self, **page_dict)
-                self.pages.append(page)
+        self.environment = Environment(
+            loader=FileSystemLoader(self.templates),
+            autoescape=select_autoescape(["html", "xml"])
+        )
 
-                path, file = page.target_url_parts
-                try:
-                    self.page_reference[path].append((file, page))
-                except KeyError:
-                    self.page_reference[path] = [(file, page), ]
+        processed_pages = self.process_wildcards(data.get("pages", []))
+        for page_dict in processed_pages:
+            page = Page(self, **page_dict)
+            self.pages.append(page)
 
-            self.resources = [PlainResource(self, **resource) for resource in data.get("resources", [])]
-        except KeyError as ke:
-            if ke is 'templates':
-                print("No templates found for %s" % (data["site"]))
-            elif ke is 'resources':
-                print("No resources found for %s" % (data['site']))
+            path, file = page.target_url_parts
+            try:
+                self.page_reference[path].append((file, page))
+            except KeyError:
+                self.page_reference[path] = [(file, page), ]
+
+        self.resources = [PlainResource(self, **resource) for resource in data.get("resources", [])]
 
     def render(self):
         shutil.rmtree(os.path.abspath(self.output_root), ignore_errors=True)

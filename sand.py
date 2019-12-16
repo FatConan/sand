@@ -57,6 +57,7 @@ This is a new sand site.
 
 """
 
+
 @click.command(context_settings={"ignore_unknown_options": True})
 @click.argument('project_location')
 @click.option("--page", nargs=1, default=None, help="Generate a new page in the provided site")
@@ -75,6 +76,7 @@ def main(project_location, page=None, site=None):
 def perform_render(sites):
     # Render
     for site in sites:
+        print("Rendering - %s to %s" % (site.root, site.output_root))
         site.render()
 
 
