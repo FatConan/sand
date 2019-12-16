@@ -6,7 +6,7 @@ class RenderEntity(object):
         self.site = site
         self.source = source
         self.target = target
-        
+
         try:
             self.source_file = os.path.split(self.source)[-1]
         except IndexError:
