@@ -17,7 +17,9 @@ python3 sand.py example
 
 from within the checked out folder.
 
-## An explanation of the example project
+## Configuration 
+
+Describing the configuration in the `site.json` file we'll make reference to how we build our example.
 
 When the above command is run the `site.json` informs **Sand** how to build the HTML output, and **Sand** follows these 
 instructions to create a styled, HTML version of the README markdown 
@@ -34,10 +36,28 @@ Each site is represented as a map containing up to four keys:
 
 #### root
 
-Root defines the working directory of this particular site relative to the folder provided in the python command. 
+`root` defines the working directory of this particular site relative to the folder provided to the python command. Any `source` folders
+will be defined relative to the `root`.
 
-In this case our configuration 
+In this case our configuration states `"root": "."` so the working directory of this site is the `example` folder.
 
+#### output_root
+
+`output_root` defines the output directory relative to the folder provided to the python command. Any `target` folders defined
+will be relative to the `output_root`. 
+
+We don't specify a value in the example `site.json` file so it takes the default value of `"./output"` (so `example/output` in this case).
+
+#### templates
+
+`templates` defines a list of folders relative to `root` where our jinja2 templates can be found. We'll reference these by name in 
+our page configuration when we define our pages.  
+
+In this case we list a single templates folder ```"templates": ["templates"],``` and this is again relative to our `root` so that 
+it can be found at `example/templates` in this instance. If you inspect this [templates folder](https://github.com/FatConan/sand/tree/master/example/templates) you'll find a single jinja2 template named [default.html](https://github.com/FatConan/sand/blob/master/example/templates/default.html)
+
+#### pages
+`pages` defines 
 
 ## Usage
 
