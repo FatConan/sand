@@ -6,11 +6,14 @@
         <link rel="stylesheet" type="text/css" href="/resources/css/style.css" />
     </head>
     <body>
+        {% if DATA.get("is_index") %}<header>
+            <p>Looking for a quick reference? Try the <a href="/cheat-sheet.html">Sand Cheat Sheet</a></p>
+        </header>{% endif %}
         <div id="wrapper">
             {% block content %}{{ content|safe }}{% endblock %}
             <footer>
-                <p>Theme <a href="http://markedstyle.com/styles/github">GitHub</a>
-                    by <a href="http://markedstyle.com/authors/4">Brett Terpstra</a> from <a href="http://markedstyle.com">markedstyle.com</a></p>
+                <p>Theme <a href="http://markedstyle.com/styles/minist">Minist</a>
+                    by <a href="http://markedstyle.com/authors/1642">Miguel Bartelsman</a> from <a href="http://markedstyle.com">markedstyle.com</a></p>
             </footer>
         </div>
     </body>

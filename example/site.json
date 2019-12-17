@@ -6,10 +6,19 @@
                 {
                     "config": {
                         "title": "Sand Documentation",
-                        "template": "default.html"
+                        "template": "default.html",
+                        "is_index": true
                     },
                     "source": "../README.md",
                     "target": "./index.html"
+                },
+                {
+                    "config": {
+                        "title": "Sand Cheat Sheet",
+                        "template": "default.html"
+                    },
+                    "source": "../SandCheatSheet.md",
+                    "target": "./cheat-sheet.html"
                 }
             ],
             "templates": [

@@ -1,29 +1,45 @@
-# Sand : A simple static site generator
+# Sand: A simple static site generator
 
 **Sand** is a static site generator based heavily on an early version of [Stone](https://github.com/neuralsandwich/stone) by
 [NeuralSandwich](https://github.com/neuralsandwich). While **Stone** is becoming a more fully featured blog engine, **Sand**
 pairs back functionality to the basics, and is designed to provide similar functionality to the early versions of Stone, but 
 with added wildcard support, support for resources, and some other functions that proved useful when building projects.
 
-# Built on Sand
-This **README** serves as both documentation for this tool as well as an example project. 
-If looking at this in Github you'll notice
-that this file is rendering with the line:
-
-```
-title: Sand Documentation template: default.html
-```
-
-at the start of the document. This is part of the metadata required by **Sand** to render this page (written in YAML). The rest of the required
-metadata is provided in an accompanying `site.json` JSON file.
+## Built on Sand
+This **README** serves as both documentation for this tool as well as an example project.  While this file contains the content, 
+there are a number pieces of additional metadata required to configure the **Sand** project, which are provided by the accompanying `site.json` JSON file.
 
 To see **Sand** generate this documentation, clone this repository and run:
-```bash
+
+```
 python3 sand.py example
 ```
+
 from within the checked out folder.
 
-# Usage
+## An explanation of the example project
+
+When the above command is run the `site.json` informs **Sand** how to build the HTML output, and **Sand** follows these 
+instructions to create a styled, HTML version of the README markdown 
+(additionally it creates a `site.json` cheat sheet from the ConfigurationCheatSheet.md file).
+
+If you open the [site.json](https://github.com/FatConan/sand/blob/master/example/site.json) file you'll see a configuration file
+that describes how to build the example.
+
+### site.json
+
+The top level map of the site.json file contains the "sites" array. This is a list of sites that will be built by this particular file.
+Each site is represented as a map containing up to four keys:
+`root`, `output_root`, `templates`, `pages` and `resources`.
+
+#### root
+
+Root defines the working directory of this particular site relative to the folder provided in the python command. 
+
+In this case our configuration 
+
+
+## Usage
 
 To get started with `Sand`:
 
@@ -34,7 +50,7 @@ To get started with `Sand`:
     # Add a new page to an existing project
     python3 sand.py <project_folder> --page <page_name>
 
-## Folder Structure
+### Folder Structure
 
 The structure of a project is pretty flexible and can be expanded and contracted by updating the `site.json` metadata, however,
 a common example structure (and that created by the built in site generator) is:
