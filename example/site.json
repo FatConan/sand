@@ -17,7 +17,7 @@
                         "title": "Sand Cheat Sheet",
                         "template": "default.html"
                     },
-                    "source": "../SandCheatSheet.md",
+                    "source": "../supplementary-docs/sand-cheat-sheet.md",
                     "target": "./cheat-sheet.html"
                 }
             ],
