@@ -272,44 +272,42 @@ that you can't otherwise achieve in the templates.
 
 By way of example, if we add a list of terms to pages as "tags" in their metadata:
 
-```
-"pages": [
-    {
-        "config": {
-            "title": "Sand Cheat Sheet",
-            "template": "default.html",
-            "tags": ["guide"]
+    "pages": [
+        {
+            "config": {
+                "title": "Sand Cheat Sheet",
+                "template": "default.html",
+                "tags": ["guide"]
+            },
+            "source": "./RAEDME.md",
+            "target": "./index.html"
         },
-        "source": "./RAEDME.md",
-        "target": "./index.html"
-    },
-    {
-        "config": {
-            "title": "Sand Cheat Sheet",
-            "template": "default.html",
-            "tags": ["guide", "cheat sheet"]
-        },
-        "source": "../supplementary-docs/sand-cheat-sheet.md",
-        "target": "./cheat-sheet.html"
-    }
-]
-```
+        {
+            "config": {
+                "title": "Sand Cheat Sheet",
+                "template": "default.html",
+                "tags": ["guide", "cheat sheet"]
+            },
+            "source": "../supplementary-docs/sand-cheat-sheet.md",
+            "target": "./cheat-sheet.html"
+        }
+    ]
 
 We can then create a new `SiteExt` class that will allow us to fetch the pages by their tag like so:
 
-    ```
+
     class SiteExt:
         def by_tag(self, tag):
            return [p for p in self.pages if tag in p.page_data.get("tags")]
-    ```
+
 
 Our site instance would then be augmented with this at render time so that we could reference the method from within our
 templates or our `jinja_pass` enabled markdown:
 
-    ```
-        {% set guides = GLOBALS["site"].by_tag("guide") %} 
-        {% for page in guides %}
-            <li>{{ page.data("title") }}</li>
-        {% endfor %}
-    ```
+
+    {% set guides = GLOBALS["site"].by_tag("guide") %} 
+    {% for page in guides %}
+        <li>{{ page.data("title") }}</li>
+    {% endfor %}
+
 
