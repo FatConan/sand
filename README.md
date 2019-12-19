@@ -19,7 +19,12 @@ from within the checked out folder.
 
 ## Configuration 
 
-Describing the configuration in the `site.json` file we'll make reference to how we build our example.
+Describing the configuration in the `site.json` file we'll make reference to how we build our example. 
+
+**NB:** In previous versions of `Sand` the configuration had been read only as JSON, but now is read as HOCON using [pyhocon](https://github.com/chimpler/pyhocon/). This preserves backwards compatibility, but also allows for the 
+configuration bells and whistles that [HOCON](https://github.com/lightbend/config/blob/master/HOCON.md) supports. To make this a little less jarring
+`Sand` will now also attempt to read configuration data from `site.hocon` and `site.conf` in addition to `site.json` to ease any 
+nomenclature-based anxiety.
 
 When the above command is run the `site.json` informs **Sand** how to build the HTML output, and **Sand** follows these 
 instructions to create a styled, HTML version of the README markdown 

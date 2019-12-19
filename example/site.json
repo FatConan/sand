@@ -1,3 +1,4 @@
+// This file is now read as HOCON rather than JSON so that we can include comments like this
 {
     "sites": [
         {
