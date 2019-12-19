@@ -279,7 +279,7 @@ By way of example, if we add a list of terms to pages as "tags" in their metadat
                 "template": "default.html",
                 "tags": ["guide"]
             },
-            "source": "./RAEDME.md",
+            "source": "./README.md",
             "target": "./index.html"
         },
         {
