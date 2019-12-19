@@ -1,6 +1,6 @@
 language: python
 python: 3.5
-before_intsall:
+before_install:
 - openssl aes-256-cbc -K $encrypted_c5db068f8b31_key -iv $encrypted_c5db068f8b31_iv
   -in deploy_key.enc -out deploy_key -d
 - chmod 400 deploy_key
