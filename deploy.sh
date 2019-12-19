@@ -6,5 +6,5 @@ echo "   User $DEPLOY_USER" >> $HOME/.ssh/config
 echo "   StrictHostKeyChecking no" >> $HOME/.ssh/config
 echo "   IdentityFile $TRAVIS_BUILD_DIR/deploy_key" >> $HOME/.ssh/config
 
-rsync -arv output/* $DEPLOY_NAME:$DEPLOY_PATH
+rsync -arv example/output/* $DEPLOY_NAME:$DEPLOY_PATH
 
