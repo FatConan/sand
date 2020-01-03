@@ -13,8 +13,6 @@ class Page(RenderEntity):
         if config is not None and isinstance(config, dict):
             self.page_data.update(config)
 
-        print(config)
-        print(self.page_data)
         self.source_path = os.path.abspath(os.path.join(self.site.root, self.source))
         self.target_path = os.path.abspath(os.path.join(self.site.output_root, self.target))
         self.target_url = os.path.abspath(os.path.join("/", self.target))
