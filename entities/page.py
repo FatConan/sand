@@ -5,12 +5,16 @@ from jinja2.exceptions import TemplateNotFound
 
 
 class Page(RenderEntity):
-    def __init__(self, site, source, target, page_type=None, config={}): #itle=None, template=None, page_type=None):
+    def __init__(self, site, source, target, page_type=None, config=None):
         super().__init__(site, source, target)
         self.page_type = page_type
         self.page_data = {}
-        self.page_data.update(config)
 
+        if config is not None and isinstance(config, dict):
+            self.page_data.update(config)
+
+        print(config)
+        print(self.page_data)
         self.source_path = os.path.abspath(os.path.join(self.site.root, self.source))
         self.target_path = os.path.abspath(os.path.join(self.site.output_root, self.target))
         self.target_url = os.path.abspath(os.path.join("/", self.target))
@@ -40,6 +44,7 @@ class Page(RenderEntity):
             'target_url': self.target_url,
             'target_url_parts': self.target_url_parts,
         }
+
         if self.page_data.get("jinja_pass", False):
             data["content"] = environment.from_string(self.raw_content).render(data)
         else:
@@ -51,6 +56,7 @@ class Page(RenderEntity):
 
     def convert_to_template_html(self):
         # First render out the markdown and collection the YAML data
+        self.site.renderer.reset()
         self.raw_content = self.site.renderer.convert(self.raw_content)
         for key, value in self.site.renderer.Meta.items():
             if isinstance(value, list) and len(value) == 1:
@@ -77,6 +83,5 @@ class Page(RenderEntity):
                     target_file.write(
                         self.to_dict(environment)["content"]
                     )
-
             else:
                 raise
