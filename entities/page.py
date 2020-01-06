@@ -28,6 +28,7 @@ class Page(RenderEntity):
                 'site': self.site,
                 'site_root': self.site.root,
                 'output_root': self.site.output_root,
+                'uuid': self.site.uuid,
             },
 
             'DATA': self.page_data,

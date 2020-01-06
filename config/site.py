@@ -6,6 +6,7 @@ import os
 import glob
 import shutil
 import re
+import uuid
 
 
 class Site(object):
@@ -27,6 +28,8 @@ class Site(object):
             self.output_root = os.path.join(self.root, output_relative)
         else:
             self.output_root = os.path.join(self.root, "output")
+
+        self.uuid = uuid.uuid4()
 
         self.site_data = site_data
         self._parse(site_data)
