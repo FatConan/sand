@@ -1,5 +1,4 @@
 from entities.page import Page
-from entities.resource import PlainResource
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 import markdown
 import os
@@ -7,6 +6,8 @@ import glob
 import shutil
 import re
 import uuid
+
+from entities.resources.resource_selector import ResourceSelector
 
 
 class Site(object):
@@ -88,7 +89,7 @@ class Site(object):
             except KeyError:
                 self.page_reference[path] = [(file, page), ]
 
-        self.resources = [PlainResource(self, **resource) for resource in data.get("resources", [])]
+        self.resources = [ResourceSelector.select(self, **resource) for resource in data.get("resources", [])]
 
     def render(self):
         shutil.rmtree(os.path.abspath(self.output_root), ignore_errors=True)

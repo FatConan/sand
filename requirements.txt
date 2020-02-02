@@ -3,8 +3,10 @@ chardet==3.0.4
 Click==7.0
 idna==2.8
 Jinja2==2.10.1
+lesscpy==0.14.0
 Markdown==3.1
 MarkupSafe==1.1.1
+ply==3.11
 pyhocon==0.3.51
 pyparsing==2.4.5
 python-dateutil==2.7.3
