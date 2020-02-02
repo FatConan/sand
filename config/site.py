@@ -21,6 +21,7 @@ class Site(object):
         self.page_reference = {}
         self.templates = []
         self.resources = []
+        self.overrides = {}
 
         self.root = os.path.join(root, site_data.get("root"))
 
@@ -77,6 +78,8 @@ class Site(object):
             loader=FileSystemLoader(self.templates),
             autoescape=select_autoescape(["html", "xml"])
         )
+
+        self.overrides = data.get("overrides", {})
 
         processed_pages = self.process_wildcards(data.get("pages", []))
         for page_dict in processed_pages:

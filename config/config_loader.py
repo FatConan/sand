@@ -12,7 +12,7 @@ class ConfigLoader(object):
     def __init__(self):
         self.site_clazz = Site
 
-    def load(self, path):
+    def load(self, path, config_overrides=None):
         extensions_module = os.path.join(path, "sand/")
         if os.path.exists(extensions_module):
             sys.path.append(os.path.abspath(extensions_module))
@@ -47,6 +47,7 @@ class ConfigLoader(object):
 
         try:
             for site_data in conf["sites"]:
+                site_data["overrides"] = config_overrides
                 os.path.join(path, site_data.get("root"))
                 configs.append(self.site_clazz(path, site_data))
         except KeyError:
