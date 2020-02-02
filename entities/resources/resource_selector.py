@@ -9,6 +9,7 @@ class ResourceSelector:
 
     @classmethod
     def select(cls, *args, **kwargs):
-        renderer = cls.selection_options.get(kwargs.get("resource_type"), PlainResource)
+        resource_type = kwargs.pop("resource_type", None)
+        renderer = cls.selection_options.get(resource_type, PlainResource)
         return renderer(*args, **kwargs)
 

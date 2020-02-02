@@ -19,4 +19,4 @@ class LessResource(RenderEntity):
                 os.remove(self.target_path)
             with open(self.source_path, "r") as pre:
                 with open(self.target_path, "w") as compiled:
-                    compiled.write(lesscpy.compile(pre), minify=True)
+                    compiled.write(lesscpy.compile(pre, minify=True))

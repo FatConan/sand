@@ -89,7 +89,8 @@ class Site(object):
             except KeyError:
                 self.page_reference[path] = [(file, page), ]
 
-        self.resources = [ResourceSelector.select(self, **resource) for resource in data.get("resources", [])]
+        processed_resources = self.process_wildcards(data.get("resources", []))
+        self.resources = [ResourceSelector.select(self, **resource) for resource in processed_resources]
 
     def render(self):
         shutil.rmtree(os.path.abspath(self.output_root), ignore_errors=True)
