@@ -4,10 +4,13 @@
 @backgroundDefaultColor: #fff;
 @backgroundAltColor: #ededed;
 @navBackgroundColor: #d9dbd0;
+@bodyFont: "Fira Sans";
+@bodyFallbackFont: Arial, sans-serif;
+@monoFont: "Roboto Mono";
 
 html {
     font-size: 13pt;
-    font-family: "Roboto", Arial, sans-serif;
+    font-family: @bodyFont, @bodyFallbackFont;
     min-width: 450px;
     background: @backgroundDefaultColor;
 }
@@ -28,6 +31,8 @@ body{
 
 .container-no-nav,
 .container-releases{
+     margin: 0 auto;
+    max-width: 800px;
     padding: 30px;
 }
 
@@ -122,8 +127,7 @@ li {
 
 pre {
     display: block;
-    font-family: "Courier New", monospace;
-    font-weight: bold;
+    font-family: @monoFont, monospace;
     font-size: 12px;
     background: @backgroundAltColor;
     padding: 20px;
@@ -131,6 +135,7 @@ pre {
 
 code {
     background: @backgroundAltColor;
+    font-family: @monoFont, monospace;
     display: inline-block;
     font-size: 12px;
 }
