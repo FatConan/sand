@@ -27,8 +27,13 @@
             ],
             "resources": [
                 {
-                    "source": "resources",
-                    "target": "./resources"
+                    "source": "resources/css/*.css",
+                    "target": "./resources/css/*.css"
+                },
+                {
+                    "source": "resources/css/*.less",
+                    "target": "./resources/css/*.css",
+                    "resource_type": "less"
                 }
             ]
         }
