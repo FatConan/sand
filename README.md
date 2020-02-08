@@ -70,27 +70,26 @@ can be found in the **pages** section below.
 
 In our example the `pages` entry looks like this:
 
-```
-"pages": [
-    {
-        "config": {
-            "title": "Sand Documentation",
-            "template": "default.html",
-            "is_index": true
+    "pages": [
+        {
+            "config": {
+                "title": "Sand Documentation",
+                "template": "default.html",
+                "is_index": true
+            },
+            "source": "../README.md",
+            "target": "./index.html"
         },
-        "source": "../README.md",
-        "target": "./index.html"
-    },
-    {
-        "config": {
-            "title": "Sand Cheat Sheet",
-            "template": "default.html"
-        },
-        "source": "../supplementary-docs/sand-cheat-sheet.md",
-        "target": "./cheat-sheet.html"
-    }
-]
-```
+        {
+            "config": {
+                "title": "Sand Cheat Sheet",
+                "template": "default.html"
+            },
+            "source": "../supplementary-docs/sand-cheat-sheet.md",
+            "target": "./cheat-sheet.html"
+        }
+    ]
+
 
 This defines two pages, one processing the `README.md` file and the other the `supplementary-docs/SandCheatSheet.md` file. 
 In both cases we also tell the renderer to use the `default.html` template from the template folder defined earlier. Additionally
@@ -171,14 +170,13 @@ is used in both the `source` and `target` of a page entry.
 
 Wildcards can be very useful when you wish to process a whole folder of Markdown files:
 
-```
-"pages": [
-    {
-        "source": "blog/*.md",
-        "target": "blog/*.html"
-    }
-]
-```
+    "pages": [
+        {
+            "source": "blog/*.md",
+            "target": "blog/*.html"
+        }
+    ]
+
 
 The above directive will take all the .md files in the blog folder, and render them out to a folder of the same name in the 
 output root. All the files will be read as `[name].md` and output as the corresponding `[name].html` file.  You can also specify
