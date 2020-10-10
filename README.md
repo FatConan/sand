@@ -17,6 +17,21 @@ python3 sand.py example
 
 from within the checked out folder.
 
+## A Note on Security
+
+The [extended site object](#extended-site-object) aspects of **Sand** are designed to make it flexible enough to accommodate a range of different project types 
+(it has been used to generate a number of things from blogs to portfolios to documentation sites like this one), however,
+this also provides an avenue for potentially malicious code to be executed by **Sand**. 
+
+For example, if you run **Sand** periodically on an accessible server and an attacker were able to compromise the 
+`sand/extensions.py` file to modify the `_extend_environment` method to do something malicious then **Sand** would execute it.
+
+This hasn't been a major concern in its design as **Sand** is meant to generate static sites and so it's presumed that whatever safe environment
+**Sand** was executed within would be separate to the potentially exposed environment in which its output would be deployed.
+
+Still it's worth noting this potential vector.
+  
+
 ## Configuration 
 
 Describing the configuration in the `site.json` file we'll make reference to how we build our example. 
@@ -64,8 +79,9 @@ it can be found at `example/templates` in this instance. If you inspect this [te
 #### pages
 
 `pages` defines a list of markdown "pages" to be rendered as HTML output.  Each page consists of a map that contains at the very least a 
-`source` (relative th `root`) and `target` (relative to `output_root`) key, and optionally a `config` key that can be used provide additional metadata about the page to be generated. This is an alternative
-(and less intrusive) way of adding metadata to the markdown pages beyond including YAML definitions at the top of the document.  More about this
+`source` (relative to `root`) and `target` (relative to `output_root`) key, and optionally a `config` key that can be used provide additional metadata 
+about the page to be generated. This is an alternative (and less intrusive) way of adding metadata to the markdown pages 
+beyond including YAML definitions at the top of the document.  More about this
 can be found in the **pages** section below. 
 
 In our example the `pages` entry looks like this:
@@ -113,6 +129,8 @@ The structure of a project is pretty flexible and can be expanded and contracted
 a common example structure (and that created by the built in site generator) is:
 
     .
+    ├── sand (optional)
+    |   └── extensions.py (defines a SiteExt class)
     ├── pages
     │   └── ... (.md files)
     ├── resources
@@ -313,4 +331,19 @@ templates or our `jinja_pass` enabled markdown:
         <li>{{ page.data("title") }}</li>
     {% endfor %}
 
+You may now also define a method named `_extend_environment` that will be called prior to rendering the pages with the 
+current `jinja2` environment object passed as an argument so that you might extend the templating functionality for a 
+project. For example:
 
+
+    def _extend_environment(self, environment):
+        def nl2br(value):
+            return value.replace("\n", "<br />")
+
+        environment.filters["nl2br"] = nl2br
+
+As seen in this example's SiteExt definition adds an (unused) `jinja2` filter that replaces newlines with `<br />` tags.
+This can then accessed within a template allowing you to modify your content by piping it through the newly defined filter
+
+    {{ content|nl2br|safe }}
+    
