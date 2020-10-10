@@ -19,11 +19,13 @@ class ConfigLoader(object):
             try:
                 from extensions import SiteExt
             except ImportError:
-                pass
+                print("Unable to import extension class")
             else:
                 class Extended(Site, SiteExt):
-                    pass
-
+                    def __init__(self, *args, **kwargs):
+                        super().__init__(*args, **kwargs)
+                        if getattr(self, "_extend_environment"):
+                            self._extend_environment(self.environment)
                 self.site_clazz = Extended
 
         configs = []
