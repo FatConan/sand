@@ -24,7 +24,7 @@ class ConfigLoader(object):
                 class Extended(Site, SiteExt):
                     def __init__(self, *args, **kwargs):
                         super().__init__(*args, **kwargs)
-                        if getattr(self, "_extend_environment"):
+                        if hasattr(self, "_extend_environment"):
                             self._extend_environment(self.environment)
                 self.site_clazz = Extended
 
