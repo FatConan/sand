@@ -9,14 +9,13 @@ import uuid
 
 from entities.resources.resource_selector import ResourceSelector
 
-
 class Site(object):
     def __init__(self, root, site_data):
         print("Initialising Site")
         self.wildcard_re = re.compile("([^\*]*)\*(\..+)")
 
         self.renderer = markdown.Markdown(
-            extensions=['markdown.extensions.meta', 'markdown.extensions.toc', 'abbr']
+            extensions=['meta', 'toc', 'tables', 'abbr']
         )
         self.pages = []
         self.page_reference = {}
