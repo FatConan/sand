@@ -52,7 +52,7 @@ class Site(object):
                 listed_sources = glob.glob(os.path.abspath(os.path.join(self.root, source)))
                 for list_source in listed_sources:
                     pre, post = source_match.groups()
-                    filename = list_source.split("/")[-1].replace(post, "")
+                    filename = os.path.split(list_source)[-1].replace(post, "")
 
                     replace_target = target.replace("*", filename)
                     replace_source = source.replace("*", filename)
