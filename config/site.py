@@ -15,7 +15,7 @@ class Site(object):
         self.wildcard_re = re.compile("([^\*]*)\*(\..+)")
 
         self.renderer = markdown.Markdown(
-            extensions=['meta', 'toc', 'tables', 'abbr']
+            extensions=['extra', 'meta', 'toc', 'tables', 'abbr']
         )
         self.pages = []
         self.page_reference = {}
