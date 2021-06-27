@@ -14,6 +14,7 @@ class ConfigLoader(object):
 
     def load(self, path, config_overrides=None):
         extensions_module = os.path.join(path, "sand/")
+        print(os.path.abspath(extensions_module))
         if os.path.exists(extensions_module):
             sys.path.append(os.path.abspath(extensions_module))
             try:

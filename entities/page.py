@@ -1,4 +1,5 @@
 from entities.render_entity import RenderEntity
+import pathlib
 import os
 
 from jinja2.exceptions import TemplateNotFound
@@ -15,7 +16,7 @@ class Page(RenderEntity):
 
         self.source_path = os.path.abspath(os.path.join(self.site.root, self.source))
         self.target_path = os.path.abspath(os.path.join(self.site.output_root, self.target))
-        self.target_url = os.path.abspath(os.path.join("/", self.target))
+        self.target_url = pathlib.PurePosixPath("/", self.target)
         self.target_url_parts = os.path.split(self.target_url)
 
         self.raw_content = open(self.source_path, "r").read()
