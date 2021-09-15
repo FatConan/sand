@@ -1,8 +1,8 @@
 import json
 import errno
 import os
-from config.site import Site
 import sys
+from config.site import Site
 from pyhocon import ConfigFactory
 
 
@@ -10,25 +10,9 @@ class ConfigLoader(object):
     site_config_files = ["site.json", "site.hocon", "site.conf"]
 
     def __init__(self):
-        self.site_clazz = Site
+        pass
 
     def load(self, path, config_overrides=None):
-        extensions_module = os.path.join(path, "sand/")
-        print(os.path.abspath(extensions_module))
-        if os.path.exists(extensions_module):
-            sys.path.append(os.path.abspath(extensions_module))
-            try:
-                from extensions import SiteExt
-            except ImportError:
-                print("Unable to import extension class")
-            else:
-                class Extended(Site, SiteExt):
-                    def __init__(self, *args, **kwargs):
-                        super().__init__(*args, **kwargs)
-                        if hasattr(self, "_extend_environment"):
-                            self._extend_environment(self.environment)
-                self.site_clazz = Extended
-
         configs = []
         found_config = False
         conf = {}
@@ -51,8 +35,9 @@ class ConfigLoader(object):
         try:
             for site_data in conf["sites"]:
                 site_data["overrides"] = config_overrides
+                site_data["plugins"] = site_data.get("plugins", [])
                 os.path.join(path, site_data.get("root"))
-                configs.append(self.site_clazz(path, site_data))
+                configs.append(Site(path, site_data))
         except KeyError:
             pass
 
