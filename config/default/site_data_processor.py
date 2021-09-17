@@ -53,14 +53,8 @@ class Plugin(SandPlugin):
 
         processed_pages = self.process_wildcards(site_data.get("pages", []), site)
         for page_dict in processed_pages:
-            page = Page(site, **page_dict)
-            site.pages.append(page)
-
-            path, file = page.target_url_parts
-            try:
-                site.page_reference[path].append((file, page))
-            except KeyError:
-                site.page_reference[path] = [(file, page), ]
+            print(page_dict)
+            site.add_page(page_dict)
 
         processed_resources = self.process_wildcards(site_data.get("resources", []), site)
         site.resources = [ResourceSelector.select(site, **resource) for resource in processed_resources]

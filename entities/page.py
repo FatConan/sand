@@ -46,10 +46,14 @@ class Page(RenderEntity):
             'target_url_parts': self.target_url_parts,
         }
 
+        for plugin in self.site._plugins:
+            plugin.add_render_context(self, environment, data)
+
         if self.page_data.get("jinja_pass", False):
             data["content"] = environment.from_string(self.raw_content).render(data)
         else:
             data["content"] = self.raw_content
+
         return data
 
     def data(self, key, default=None, conversion=lambda x: x):

@@ -67,7 +67,6 @@ def main(project_location, page=None, site=None, config_override=()):
     config_overrides = {}
     if config_override:
         config_overrides = dict(arg.split("=") for arg in config_override)
-        print(config_overrides)
 
     if page is None and site is None:
         if os.path.exists(project_location):

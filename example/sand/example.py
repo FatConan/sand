@@ -4,8 +4,10 @@ class Plugin:
 
     #Called during the parsing phase of the processing
     def parse(self, site_data, site):
-        print("Extending Environment")
-        def nl2br(value):
-            return value.replace("\n", "<br />")
+        pass
 
-        site.environment.filters["nl2br"] = nl2br
+    def nl2br(self, value):
+        return value.replace("\n", "<br />")
+
+    def add_render_context(self, page, environment, data):
+        environment.filters["nl2br"] = self.nl2br
