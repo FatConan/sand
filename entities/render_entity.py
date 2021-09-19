@@ -7,10 +7,13 @@ class RenderEntity(object):
         self.source = source
         self.target = target
 
-        try:
-            self.source_file = os.path.split(self.source)[-1]
-        except IndexError:
-            self.source_file = source
+        if self.source is not None:
+            try:
+                self.source_file = os.path.split(self.source)[-1]
+            except IndexError:
+                self.source_file = source
+        else:
+            self.source_file = None
 
         try:
             self.target_file = os.path.split(self.target)[-1]
