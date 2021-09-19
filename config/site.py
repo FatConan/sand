@@ -61,6 +61,8 @@ class Site(object):
         except KeyError:
             self.page_reference[path] = [(file, page), ]
 
+        return page
+
     def load_plugin(self, root, module):
         root_path = os.path.abspath(root)
         package = "%s.sand" % os.path.split(root_path)[-1]

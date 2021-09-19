@@ -19,7 +19,11 @@ class Page(RenderEntity):
         self.target_url = pathlib.PurePosixPath("/", self.target)
         self.target_url_parts = os.path.split(self.target_url)
 
-        self.raw_content = open(self.source_path, "r").read()
+        if self.source_path is not None:
+            self.raw_content = open(self.source_path, "r").read()
+        else:
+            self.raw_content = self.page_data.get("static_content", "")
+
         self.content = None
         self.convert_to_template_html()
 
