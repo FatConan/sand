@@ -1,16 +1,10 @@
 from entities.page import Page
 from config.default.site_data_processor import Plugin as DefaultPlugin
-from jinja2 import Environment, FileSystemLoader, select_autoescape
 import importlib
-import importlib.util as ilu
 import markdown
 import os, sys
-import glob
 import shutil
-import re
 import uuid
-
-from entities.resources.resource_selector import ResourceSelector
 
 class Site(object):
     def __init__(self, root, site_data):
