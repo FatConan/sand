@@ -1,7 +1,6 @@
 import os
 import re
 import glob
-from entities.page import Page
 from entities.resources.resource_selector import ResourceSelector
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from plugin.plugin import SandPlugin
