@@ -78,8 +78,6 @@ class Page(RenderEntity):
                 self.page_data[key] = value
 
     def render(self, environment):
-        print("Render %s" % self)
-
         try:
             os.makedirs(os.path.split(self.target_path)[0], exist_ok=True)
             with open(self.target_path, "w") as target_file:

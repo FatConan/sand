@@ -52,7 +52,6 @@ class Plugin(SandPlugin):
 
         processed_pages = self.process_wildcards(site_data.get("pages", []), site)
         for page_dict in processed_pages:
-            print(page_dict)
             site.add_page(page_dict)
 
         processed_resources = self.process_wildcards(site_data.get("resources", []), site)
