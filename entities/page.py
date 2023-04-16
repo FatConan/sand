@@ -69,13 +69,18 @@ class Page(RenderEntity):
 
     def convert_to_template_html(self):
         # First render out the markdown and collection the YAML data
-        self.site.renderer.reset()
-        self.raw_content = self.site.renderer.convert(self.raw_content)
-        for key, value in self.site.renderer.Meta.items():
-            if isinstance(value, list) and len(value) == 1:
-                self.page_data[key] = value[0]
-            else:
-                self.page_data[key] = value
+        if self.page_type == "RAW":
+            # If we indicate that a page is RAW, then the text should pass unfiltered and unchanged into the final
+            # document.
+            pass
+        else:
+            self.site.renderer.reset()
+            self.raw_content = self.site.renderer.convert(self.raw_content)
+            for key, value in self.site.renderer.Meta.items():
+                if isinstance(value, list) and len(value) == 1:
+                    self.page_data[key] = value[0]
+                else:
+                    self.page_data[key] = value
 
     def render(self, environment):
         try:

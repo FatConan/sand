@@ -21,6 +21,10 @@
             </div>
         </div>
         <script type="text/javascript">
+            {% with a="This is a test", b="So is this" %}
+                window.test = "{{ a }}";
+            {% endwith %}
+
             window.onscroll = function(){
                 scrollFunction();
             };
