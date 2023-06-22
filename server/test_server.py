@@ -1,7 +1,5 @@
 import http.server
 import socketserver
-import os
-
 
 
 def simple_handler(site):
