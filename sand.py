@@ -63,7 +63,8 @@ This is a new sand site.
 @click.option("--page", nargs=1, default=None, help="Generate a new page in the provided site")
 @click.option("--site", nargs=1, default=None, help="Generate a new basic site")
 @click.option("--config-override", "-c", type=str, multiple=True)
-def main(project_location, page=None, site=None, config_override=()):
+@click.option("--serve", is_flag=True, help="Run a server serving the generated site")
+def main(project_location, page=None, site=None, serve=False, config_override=()):
     config_overrides = {}
     if config_override:
         config_overrides = dict(arg.split("=") for arg in config_override)
@@ -72,10 +73,16 @@ def main(project_location, page=None, site=None, config_override=()):
         if os.path.exists(project_location):
             sites = ConfigLoader().load(click.format_filename(project_location), config_overrides)
             perform_render(sites)
+
+        if serve:
+            serve_render(sites)
+
+
     elif page is not None:
         create_new_page(page)
     elif site is not None:
         create_new_site(site, project_location)
+
 
 
 
@@ -85,6 +92,11 @@ def perform_render(sites):
     for site in sites:
         print("Rendering - %s to %s" % (site.root, site.output_root))
         site.render()
+
+def serve_render(sites):
+    from server.test_server import Servers
+    servers = Servers()
+    servers.for_sites(sites)
 
 
 def create_new_page(page):

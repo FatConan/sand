@@ -3,6 +3,8 @@ import shutil
 import os
 
 
+# A PlainResource is a file that is copied from one location to another. If the target location already exists
+# then it will delete the target and replace it.
 class PlainResource(RenderEntity):
     def __init__(self, site, source, target, resource_type=None):
         super().__init__(site, source, target)
@@ -20,3 +22,4 @@ class PlainResource(RenderEntity):
             if os.path.exists(self.target_path):
                 os.remove(self.target_path)
             shutil.copy2(self.source_path, self.target_path)
+
