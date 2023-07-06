@@ -96,7 +96,7 @@ class Page(RenderEntity):
             print("Requested template (%s) not found, skipping" % tnf)
         except KeyError as ke:
             if str(ke) == '\'template\'':
-                print('Missing template, rendering markdown only')
+                print('Missing template, rendering markdown only for (%s)' % self.source_path)
                 os.makedirs(os.path.split(self.target_path)[0], exist_ok=True)
                 with open(self.target_path, "w") as target_file:
                     target_file.write(
