@@ -14,6 +14,7 @@ class Page(RenderEntity):
         if config is not None and isinstance(config, dict):
             self.page_data.update(config)
 
+
         if self.source is not None:
             self.source_path = os.path.abspath(os.path.join(self.site.root, self.source))
         else:
@@ -76,11 +77,13 @@ class Page(RenderEntity):
         else:
             self.site.renderer.reset()
             self.raw_content = self.site.renderer.convert(self.raw_content)
+            local_template_data = {}
             for key, value in self.site.renderer.Meta.items():
                 if isinstance(value, list) and len(value) == 1:
-                    self.page_data[key] = value[0]
+                    local_template_data[key] = value[0]
                 else:
-                    self.page_data[key] = value
+                    local_template_data[key] = value
+            self.page_data.update(local_template_data)
 
     def render(self, environment):
         try:
