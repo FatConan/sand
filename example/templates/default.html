@@ -3,11 +3,11 @@
     <head>
         <meta charset="UTF-8" />
         <title>{{ DATA.get("title") }}</title>
-        <link rel="stylesheet" type="text/css" href="/resources/css/root.css" />
+        {{ ES6CSS.headers() | safe }}
     </head>
     <body>
         <div class="container-no-nav">
-            <button onclick="topFunction()" id="returnToTop" title="Go to top">Top</button>
+            <button id="returnToTop" title="Go to top">Top</button>
 
             {% if DATA.get("is_index") %}<header>
                 <p>Looking for a quick reference? Try the <a href="/cheat-sheet.html">Sand Cheat Sheet</a></p>
@@ -20,7 +20,11 @@
                 </footer>
             </div>
         </div>
-        <script type="text/javascript">
+        <script type="module">
+            import "jquery";
+
+            const $returnToTop = $("#returnToTop");
+
             {% with a="This is a test", b="So is this" %}
                 window.test = "{{ a }}";
             {% endwith %}
@@ -31,9 +35,9 @@
 
             function scrollFunction(){
                 if(document.body.scrollTop > 20 || document.documentElement.scrollTop > 20){
-                    document.getElementById("returnToTop").style.display = "block";
+                    $returnToTop.css("display", "block");
                 }else{
-                    document.getElementById("returnToTop").style.display = "none";
+                    $returnToTop.css("display", "none");
                 }
             }
 
@@ -42,6 +46,7 @@
                 document.body.scrollTop = 0;
                 document.documentElement.scrollTop = 0;
             }
+            $returnToTop.on("click", topFunction);
         </script>
     </body>
 </html>

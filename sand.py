@@ -84,14 +84,12 @@ def main(project_location, page=None, site=None, serve=False, config_override=()
         create_new_site(site, project_location)
 
 
-
-
-
 def perform_render(sites):
     # Render
     for site in sites:
         print("Rendering - %s to %s" % (site.root, site.output_root))
         site.render()
+
 
 def serve_render(sites):
     from server.test_server import Servers
