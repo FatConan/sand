@@ -2,13 +2,13 @@ import importlib
 import os
 import shutil
 import sys
-import traceback
 import uuid
 
 import markdown
 
 from config.default.site_data_processor import Plugin as DefaultPlugin
 from entities.page import Page
+from jinja2 import environment
 
 
 class Site(object):
@@ -25,6 +25,7 @@ class Site(object):
                 if plugin_instance is not None:
                     self._plugins.append(plugin_instance)
 
+        self.environment = environment
         self.renderer = markdown.Markdown(
             extensions=['extra', 'meta', 'toc', 'tables', 'abbr']
         )
@@ -64,6 +65,9 @@ class Site(object):
 
         return page
 
+    def plugins(self):
+        return self._plugins
+
     def load_plugin(self, root, module):
         # Plugins may be loaded from the project or from the builtins. Check the externals first then
         # try the builtins folder
@@ -78,7 +82,6 @@ class Site(object):
         except ImportError:
             # Try the builtins
             try:
-
                 instance = importlib.import_module("plugin.builtins.%s" % module).Plugin()
                 print("Built-in plugin '%s' loaded" % module)
                 return instance

@@ -55,7 +55,7 @@ class Page(RenderEntity):
             'target_url_parts': self.target_url_parts,
         }
 
-        for plugin in self.site._plugins:
+        for plugin in self.site.plugins():
             plugin.add_render_context(self, environment, data)
 
         if self.page_data.get("jinja_pass", False):
