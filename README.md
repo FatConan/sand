@@ -12,10 +12,10 @@ there are a number pieces of additional metadata required to configure the **San
 To see **Sand** generate this documentation, clone this repository and run:
 
 ```
-python3 sand.py example
+python3 sand.py example --serve
 ```
 
-from within the checked out folder.
+from within the checked out folder. This will build this documentation and start a development server at http://localhost:9000 serving it.
 
 ## A Note on Security
 
