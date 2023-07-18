@@ -317,8 +317,7 @@ A plugin is defined as a class named `Plugin` requiring the following methods:
             pass 
 
 
-
-You can create a plugin named `<name>` by creating a class named `Plugin` in a `<name>.py` file a folder called `sand` under your project root. Your plugin will have the ability to hook into the **Sand** process at both the stage at which the site structure is being constructed, and at the point the content is rendered. This can be done by modifying the `parse` and `add_render_context` methods. 
+You can create a plugin named `<name>` by creating a class named `Plugin` in a `<name>.py` file within a folder named `sand` under your project root. Your plugin will have the ability to hook into the **Sand** process at both the stage at which the site structure is being constructed, and at the point the content is rendered. This can be done by modifying the `parse` and `add_render_context` methods. 
 
     .
     ├── sand
@@ -326,13 +325,16 @@ You can create a plugin named `<name>` by creating a class named `Plugin` in a `
     └── site.conf
 
 
-By way of example, if we add a list of tserms to pages as "tags" in their metadata:
+By way of example, if we add a list of terms to pages as "tags" in their metadata:
 
     "pages": [
         {
             "config": {
-                "title": "Sand Cheat Sheet",
+                "title": "Sand Documentation",
                 "template": "default.html",
+                "is_index": true,
+                "rss": true,
+                "created": "2023-07-16 18:12:00"
                 "tags": ["guide"]
             },
             "source": "./README.md",
@@ -342,6 +344,8 @@ By way of example, if we add a list of tserms to pages as "tags" in their metada
             "config": {
                 "title": "Sand Cheat Sheet",
                 "template": "default.html",
+                "rss": true,
+                "created": "2023-07-16 18:12:00"
                 "tags": ["guide", "cheat sheet"]
             },
             "source": "../supplementary-docs/sand-cheat-sheet.md",
@@ -349,36 +353,55 @@ By way of example, if we add a list of tserms to pages as "tags" in their metada
         }
     ]
 
-We can then create a new `SiteExt` class that will allow us to fetch the pages by their tag like so:
+We can then create a new `Plugin` class that will allow us to fetch the pages by their tag like so:
+
+    class Tags:
+        def __init__(self, pages):
+            self.pages = pages
+        
+         def by_tag(self, tag):
+                   return [p for p in self.pages if tag in p.data("tags", [])]
 
 
-    class SiteExt:
-        def by_tag(self, tag):
-           return [p for p in self.pages if tag in p.page_data.get("tags")]
+    class Plugin:
+        def __init__(self):
+            self.tags = None
 
+        def configure(self, site_data, site):
+            self.tags = Tags(site.pages)
+    
+        def parse(self, site_data, site):
+            pass
+    
+        def add_render_context(self, page, environment, data):
+            data["TAGS"] = self.tags
 
-Our site instance would then be augmented with this at render time so that we could reference the method from within our
-templates or our `jinja_pass` enabled markdown:
+If we save this plugin as `tags.py` in our project's `sand` folder then we'll be able to include it by adding `"tags"` to the list of plugins in our `site.conf` file. The `add_render_context` call will add a variable to our jinja environment names `TAGS` that allows us to access the `by_tag` method from within our templates or our `jinja_pass` enabled markdown like:
 
-
-    {% set guides = GLOBALS["site"].by_tag("guide") %} 
-    {% for page in guides %}
-        <li>{{ page.data("title") }}</li>
+    {% for page in TAGS.by_tag("guide") %}
+        {{ page.data("title") }}
     {% endfor %}
 
-You may now also define a method named `_extend_environment` that will be called prior to rendering the pages with the 
-current `jinja2` environment object passed as an argument so that you might extend the templating functionality for a 
-project. For example:
+We could further augment the Tags class to provide the data for creating a tag cloud or any other function we would like.
 
+The `add_render_context` method also allows you to augment the `jinja2` environment object (as passed as an argument to it) so that you can extend the templating functionality for a project. The plugin in `example.py` of this documentation's project adds a filter named `nl2br` that replaces new lines with html breaks.  
 
-    def _extend_environment(self, environment):
+    class Plugin:
+        def configure(self, site_data, site):
+            pass
+    
+        #Called during the parsing phase of the processing
+        def parse(self, site_data, site):
+            pass
+    
+        @staticmethod
         def nl2br(value):
             return value.replace("\n", "<br />")
+    
+        def add_render_context(self, page, environment, data):
+            environment.filters["nl2br"] = self.nl2br
 
-        environment.filters["nl2br"] = nl2br
-
-As seen in this example's SiteExt definition adds an (unused) `jinja2` filter that replaces newlines with `<br />` tags.
-This can then accessed within a template allowing you to modify your content by piping it through the newly defined filter
+This can then be accessed within a template by piping content through the newly defined filter:
 
     {{ content|nl2br|safe }}
     
