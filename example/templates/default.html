@@ -10,6 +10,10 @@
             <button id="returnToTop" title="Go to top">Top</button>
 
             {% if DATA.get("is_index") %}<header>
+                <nav>
+                    <a id="navigator" href="#">Navigation</a>
+                    <div id="navigator-menu-container" class="main-navigation inactive"></div>
+                </nav>
                 <p>Looking for a quick reference? Try the <a href="/cheat-sheet.html">Sand Cheat Sheet</a></p>
             </header>{% endif %}
             <div id="wrapper">

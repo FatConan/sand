@@ -14,7 +14,6 @@ class Page(RenderEntity):
         if config is not None and isinstance(config, dict):
             self.page_data.update(config)
 
-
         if self.source is not None:
             self.source_path = os.path.abspath(os.path.join(self.site.root, self.source))
         else:

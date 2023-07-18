@@ -20,7 +20,6 @@ class Plugin:
     def configure(self, site_data, site):
         pass
 
-
     # Called during the parsing phase of the processing
     @staticmethod
     def process_pages(page_reference):
@@ -39,7 +38,7 @@ class Plugin:
     def parse(self, site_data, site):
         rss_config = site_data.get("rss", {})
         base_url = site_data.get("domain", "")
-        if base_url[len(base_url)-1] == "/":
+        if base_url[len(base_url) - 1] == "/":
             base_url = base_url[:-1]
         pages = self.process_pages(site.page_reference)
         pages.sort(key=lambda x: x[1].data("created", "1970-01-01 00:00:00"))

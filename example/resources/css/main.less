@@ -184,31 +184,40 @@ a{
     }
 }
 
-nav.main-navigation{
+.main-navigation{
     grid-column: 1;
     box-sizing: border-box;
     background: @navBackgroundColor;
     color: @defaultTextColor;
     padding: 30px;
+    position: absolute;
+    z-index: 100;
+    left: 0;
+    top: 0;
+
+
+    &.inactive {
+      display: none;
+    }
 
     a, li{
         text-transform: lowercase;
         display: block;
     }
 
-    ol{
+    ul, ol{
         border-left: 4px solid @altHighlightColor;
         padding: 4px;
 
         li {
-            margin: 4px 0 0 20px;
+            margin: 4px 0 0 10px;
             &:first-child{
-                margin: 0 0 0 20px;
+                margin: 0 0 0 10px;
             }
         }
-
     }
 
+    ul ul,
     ol ol{
         padding: 4px 0 0;
         border-left: none;

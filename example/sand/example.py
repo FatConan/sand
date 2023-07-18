@@ -6,7 +6,8 @@ class Plugin:
     def parse(self, site_data, site):
         pass
 
-    def nl2br(self, value):
+    @staticmethod
+    def nl2br(value):
         return value.replace("\n", "<br />")
 
     def add_render_context(self, page, environment, data):

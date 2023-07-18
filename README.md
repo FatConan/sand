@@ -7,7 +7,7 @@ with added wildcard support, support for resources, and some other functions tha
 
 ## Built on Sand
 This **README** serves as both documentation for this tool as well as an example project.  While this file contains the content, 
-there are a number pieces of additional metadata required to configure the **Sand** project, which are provided by the accompanying `site.json` JSON file.
+there are a number of pieces of additional metadata required to configure the **Sand** project, which are provided by the accompanying `site.conf` HOCON file.
 
 To see **Sand** generate this documentation, clone this repository and run:
 
@@ -15,44 +15,53 @@ To see **Sand** generate this documentation, clone this repository and run:
 python3 sand.py example --serve
 ```
 
-from within the checked out folder. This will build this documentation and start a development server at http://localhost:9000 serving it.
+from within the checked out folder. This will build this documentation and start a development server at [http://localhost:9000](http://localhost:9000) serving it. Omitting the `--serve` argument will build this documentation without starting a server. 
+
+```markdown
+python3 sand.py example
+```
 
 ## A Note on Security
 
-The [extended site object](#extended-site-object) aspects of **Sand** are designed to make it flexible enough to accommodate a range of different project types 
-(it has been used to generate a number of things from blogs to portfolios to documentation sites like this one), however,
-this also provides an avenue for potentially malicious code to be executed by **Sand**. 
+The [plugin](#plugin) aspects of **Sand** are designed to make it flexible enough to accommodate a range of different project types 
+(**Sand** has been used to generate a number of things from blogs, to portfolios, to documentation sites like this one), however, this also provides an avenue for potentially malicious code to be executed by **Sand**. 
 
-For example, if you run **Sand** periodically on an accessible server and an attacker were able to compromise the 
-`sand/extensions.py` file to modify the `_extend_environment` method to do something malicious then **Sand** would execute it.
+For example, if you run **Sand** periodically on an accessible server and an attacker were able to compromise a `sand/plugin.py` file to modify any of the expected plugin methods (`configure`, `parse`, `add_render_context`) to do something malicious then **Sand** would execute them.
 
 This hasn't been a major concern in its design as **Sand** is meant to generate static sites and so it's presumed that whatever safe environment
 **Sand** was executed within would be separate to the potentially exposed environment in which its output would be deployed.
 
-Still it's worth noting this potential vector.
+Still it's worth noting this potential vector as this plugins folder would be something that would be expected to exist outside the core **Sand** code where it might be inadvertently unprotected.
   
 
 ## Configuration 
 
-Describing the configuration in the `site.json` file we'll make reference to how we build our example. 
+A configuration file is required to inform **Sand** what to build and how to build it. It takes the form of a HOCON file typically named `site.conf` to detail where source and output files can be found, what plugins are required and a collection of other data required when creating the HTML output. Per-page configuration may be specified using a YAML header in the markdown, or by specifying a per-page `config` entry within the `site.conf` file.
 
-**NB:** In previous versions of `Sand` the configuration had been read only as JSON, but now is read as HOCON using [pyhocon](https://github.com/chimpler/pyhocon/). This preserves backwards compatibility, but also allows for the 
-configuration bells and whistles that [HOCON](https://github.com/lightbend/config/blob/master/HOCON.md) supports. To make this a little less jarring
-`Sand` will now also attempt to read configuration data from `site.hocon` and `site.conf` in addition to `site.json` to ease any 
-nomenclature-based anxiety.
+In this overview of how the configuration works we'll walk through the `site.conf` file in the `example` folder that describes how this documentation is built. 
 
-When the above command is run the `site.json` informs **Sand** how to build the HTML output, and **Sand** follows these 
-instructions to create a styled, HTML version of the README markdown 
-(additionally it creates a `site.json` cheat sheet from the ConfigurationCheatSheet.md file).
+**NB:** In previous versions of **Sand** the configuration had been read only as JSON, but now is read as HOCON using [pyhocon](https://github.com/chimpler/pyhocon/). This preserves backwards compatibility, but also allows for the configuration bells and whistles that [HOCON](https://github.com/lightbend/config/blob/master/HOCON.md) supports. To make this a little less jarring **Sand** will now also attempt to read configuration data from `site.hocon` and `site.conf` in addition to `site.json` to ease any nomenclature-based anxiety.
 
-If you open the [site.json](https://github.com/FatConan/sand/blob/master/example/site.json) file you'll see a configuration file
+When the above `python3 sand.py example` command is run the `site.conf` in the `example` folder informs **Sand** how to build the HTML output, and **Sand** follows these instructions to create a styled, HTML version of this README markdown (additionally it creates a configuration cheat sheet from the `supplementary-docs\sand-cheat-sheet.md` file).
+
+If you open the [site.conf](https://github.com/FatConan/sand/blob/master/example/site.conf) file you'll see a configuration file
 that describes how to build the example.
 
-### site.json
+### site.conf
 
-The top level map of the site.json file contains the "sites" array. This is a list of sites that will be built by this particular file.
-Each site is represented as a map containing some or all of these keys:
-`root`, `output_root`, `templates`, `pages` and `resources`.
+The top level map of the `site.conf` file contains the "sites" array. This is a list of sites that will be built by this particular file.
+Each site is represented as a map containing some or all of these keys (there may be additional keys depending on the plugins being used, but these are the keys providing the base functionality):
+`root`, `output_root`, `plugins`, `templates`, `pages` and `resources`.
+
+In the case of the example `site.conf` file we see the following keys:
+
+- "root"
+- "domain"
+- "plugins"
+- "es6css"
+- "pages" 
+- "templates"
+- "resources"
 
 #### root
 
@@ -66,7 +75,7 @@ In this case our configuration states `"root": "."` so the working directory of 
 `output_root` defines the output directory relative to the folder provided to the python command. Any `target` folders defined
 will be relative to the `output_root`. 
 
-We don't specify a value in the example `site.json` file so it takes the default value of `"./output"` (so `example/output` in this case).
+We don't specify a value in the example `site.conf` file, so it takes the default value of `"./output"` (so `example/output` in this particular case).
 
 #### templates
 
@@ -78,11 +87,7 @@ it can be found at `example/templates` in this instance. If you inspect this [te
 
 #### pages
 
-`pages` defines a list of markdown "pages" to be rendered as HTML output.  Each page consists of a map that contains at the very least a 
-`source` (relative to `root`) and `target` (relative to `output_root`) key, and optionally a `config` key that can be used provide additional metadata 
-about the page to be generated. This is an alternative (and less intrusive) way of adding metadata to the markdown pages 
-beyond including YAML definitions at the top of the document.  More about this
-can be found in the **pages** section below. 
+`pages` defines a list of markdown "pages" to be rendered as HTML output.  Each page consists of a map that contains at the very least a `source` (relative to `root`) and `target` (relative to `output_root`) key, and optionally a `config` key that can be used provide additional metadata about the page to be generated. This is an alternative (and less intrusive) way of adding metadata to the markdown pages beyond including YAML definitions at the top of the document.  More about this can be found in the **pages** section below. 
 
 In our example the `pages` entry looks like this:
 
@@ -91,7 +96,9 @@ In our example the `pages` entry looks like this:
             "config": {
                 "title": "Sand Documentation",
                 "template": "default.html",
-                "is_index": true
+                "is_index": true,
+                "rss": true,
+                "created": "2023-07-16 18:12:00",
             },
             "source": "../README.md",
             "target": "./index.html"
@@ -99,7 +106,9 @@ In our example the `pages` entry looks like this:
         {
             "config": {
                 "title": "Sand Cheat Sheet",
-                "template": "default.html"
+                "template": "default.html",
+                "rss": true,
+                "created": "2023-07-16 18:12:00",
             },
             "source": "../supplementary-docs/sand-cheat-sheet.md",
             "target": "./cheat-sheet.html"
@@ -107,14 +116,23 @@ In our example the `pages` entry looks like this:
     ]
 
 
-This defines two pages, one processing the `README.md` file and the other the `supplementary-docs/SandCheatSheet.md` file. 
-In both cases we also tell the renderer to use the `default.html` template from the template folder defined earlier. Additionally
-we provide a page title for each page and add an `is_index` flag to the main README (both of which become accessible through the DATA object at render time,
- more about this in the **pages** & **templates** sections).
+This defines two pages, one processing the `README.md` file and the other the `supplementary-docs/sand-cheat-sheet.md` file. 
+In both cases we also tell the renderer to use the `default.html` template from the template folder defined earlier. Additionally,
+we provide a page title for each page and add an `is_index` flag to the main README (both of which become accessible through the DATA object at render time, more about this in the **pages** & **templates** sections). We also specify an `rss` flag to enable the page to be processed by the built-in rss plugin. More about plugins can be found in the plugin section.
+
+#### resources
+
+`resources` defines a list of supporting files that may be static or may require some alternative processing to the markdown processing **Sand** provides for content. Typically, these files include things like Javascript, images, media and css. In the case of the latter on of the alternative processors provided by **Sand** is the compilation of `less` files into `css` (using [lesscpy](https://github.com/lesscpy/lesscpy)). 
+
+The default handling of a resource file is simply to copy it from the source location to the target location.
+
+#### plugins
+
+`plugins` defines a list of plugins (either built-in, or project-specific) that can be used to augment the functionality of **Sand**. More on this in the [plugins](#plugins) section.
 
 ## Usage
 
-To get started with `Sand`:
+To get started with **Sand**:
 
     # Create project layout
     python3 sand.py <project_folder> --site <project_name>
@@ -130,7 +148,7 @@ a common example structure (and that created by the built in site generator) is:
 
     .
     ├── sand (optional)
-    |   └── extensions.py (defines a SiteExt class)
+    |   └── plugin.py (defines a plugin class)
     ├── pages
     │   └── ... (.md files)
     ├── resources
@@ -140,20 +158,14 @@ a common example structure (and that created by the built in site generator) is:
     │   │   └── ... (javascript)
     │   └── img
     │       └── ... (images)
-    ├── site.json
+    ├── site.conf
     └── templates
         └── ... (jinja templates)
 
 
-`site.json` is pretty flexible about the location of
-templates and files. As such you're not constrained to any particular layout for
-your site. You could have separate template folders inside each site or have
-one giant mess in your project root.
+`site.conf` is pretty flexible about the location of templates and files. As such you're not constrained to any particular layout for your site. You could have separate template folders inside each site or have one giant mess in your project root.
 
-As a demonstration, if you look at the `site.json` for this example you'll see that the 
-README.md file is being included from outside the 
-project root folder while the templates are stored within it.
-
+As a demonstration, if you look at the `site.conf` for this example you'll see that the README.md file is being included from outside the project root folder while the templates are stored within it.
 
 ## Pages
 
@@ -169,7 +181,7 @@ the template it uses. For example:
     
     Here is some content.
 
-Additionally metadata can be provided within the `site.json` at the point the page is defined (as seen in the example project above). 
+Additionally, metadata can be provided within the `site.conf` at the point the page is defined (as seen in the example project above). 
 This has the benefit of removing the need to "tarnish" the Markdown with a YAML header, but the drawback that it may not be effectively used 
 when **wildcarding** pages.
 
@@ -198,7 +210,7 @@ Wildcards can be very useful when you wish to process a whole folder of Markdown
 
 The above directive will take all the .md files in the blog folder, and render them out to a folder of the same name in the 
 output root. All the files will be read as `[name].md` and output as the corresponding `[name].html` file.  You can also specify
-a `config` map at this point, but it'll apply equally to all of the files, which can be useful for defining a template, but 
+a `config` map at this point, but it'll apply equally to all the files, which can be useful for defining a template, but 
 not for page specific information such as page titles.
 
 ## Templates
@@ -253,9 +265,9 @@ python3 sand.py example
 
 ### Content Jinja Pass
 
-`Sand` allows a Jinja pass to be performed on the markdown allowing you to (carefully) mix your markdown content with Jinja directives.
+**Sand** allows a Jinja pass to be performed on the markdown allowing you to (carefully) mix your markdown content with Jinja directives.
 When activated, the markdown content will receive a secondary Jinja rendering pass in which any Jinja directives will be processed.
-When processed they will be provided access to all of the same `DATA` and `GLOBALS` values as all the other Jinja rendering phase.
+When processed they will be provided access to all the same `DATA` and `GLOBALS` values as all the other Jinja rendering phase.
 
 This feature can be enabled by including:
 
@@ -263,7 +275,7 @@ This feature can be enabled by including:
 jinja_pass: True
 ```
 
-as part of your YAML header for any required pages.
+either as part of your YAML header, or within a `config` section of the `pages` definition in your `site.conf` for any required pages.
 
 ### GLOBALS
 
@@ -278,20 +290,43 @@ The `GLOBALS` currently is a dictionary with three elements:
 - `site`: the site object as defined in the `site.py` file that contains the page_reference which is a path-indexed 
 dictionary of all the project's pages and metadata.
 
-### Extended Site object
+### Plugins
 
-A site is represented by an instance of the [Site class](https://github.com/FatConan/sand/blob/master/config/site.py). 
-You can extend this class by creating a class named `SiteExt` in an `extensions.py` file a folder called `sand` under the project root. 
-Your `SiteExt` will be used to create a new `Site` class that extends both `Site` and `SiteExt` that you can then use to add logic
-that you can't otherwise achieve in the templates.
+A site is represented by an instance of the [Site class](https://github.com/FatConan/sand/blob/master/config/site.py). When the site is instantiated it will read a list of plugin names from the `site.conf`. It will then attempt to instantiate the plugins by loading a module named `<plugin-name>.py` first from the project's `sand` folder, then from **Sand's** own `plugin\builtins` folder. Should the module load. the plugin will be instantiated by calling `Plugin()` from the loaded module. 
+
+In this example's `site.conf` we list three plugins:
+
+    "plugins": [
+        "es6css",
+        "rss",
+        "example"
+    ]
+
+This loads two built-in plugins (`es6css` and `rss`) from the `plugin\builtins` folder and a third plugin (`example`) from the `example\sand\` folder.
+
+A plugin is defined as a class named `Plugin` requiring the following methods:
+
+    class Plugin:
+        def configure(self, site_data, site):
+            pass
+    
+        def parse(self, site_data, site):
+            pass
+    
+        def add_render_context(self, page, environment, data):
+            pass 
+
+
+
+You can create a plugin named `<name>` by creating a class named `Plugin` in a `<name>.py` file a folder called `sand` under your project root. Your plugin will have the ability to hook into the **Sand** process at both the stage at which the site structure is being constructed, and at the point the content is rendered. This can be done by modifying the `parse` and `add_render_context` methods. 
 
     .
     ├── sand
-    │   └── extensions.py
-    └── site.json
+    │   └── <plugin>.py
+    └── site.conf
 
 
-By way of example, if we add a list of terms to pages as "tags" in their metadata:
+By way of example, if we add a list of tserms to pages as "tags" in their metadata:
 
     "pages": [
         {
