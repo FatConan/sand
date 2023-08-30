@@ -1,9 +1,12 @@
+import glob
 import os
 import re
-import glob
-from entities.resources.resource_selector import ResourceSelector
+
 from jinja2 import Environment, FileSystemLoader, select_autoescape
-from plugin.plugin import SandPlugin
+
+from sand.entities.resources.resource_selector import ResourceSelector
+from sand.plugin.plugin import SandPlugin
+
 
 class Plugin(SandPlugin):
     def __init__(self):

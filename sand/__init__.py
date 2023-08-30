@@ -1,7 +1,8 @@
-from config.config_loader import ConfigLoader
+import json
 import os
 import click
-import json
+
+from sand.config.config_loader import ConfigLoader
 
 PAGE_TEMPLATE = """title: [Add a page title]
 template: [The template used to render]
@@ -86,13 +87,13 @@ def main(project_location, page=None, site=None, serve=False, config_override=()
 
 def perform_render(sites):
     # Render
-    for site in sites:
+    for i, site in enumerate(sites):
         print("Rendering - %s to %s" % (site.root, site.output_root))
         site.render()
 
 
 def serve_render(sites):
-    from server.test_server import Servers
+    from .server.test_server import Servers
     servers = Servers()
     servers.for_sites(sites)
 
@@ -130,7 +131,3 @@ def create_new_site(site, project_location):
 
     else:
         click.echo("A site.json file already exists in this folder")
-
-
-if __name__ == "__main__":
-    main()

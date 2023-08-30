@@ -4,3 +4,5 @@ venv
 __pycache__
 example/output
 deploy_key
+build
+sand.egg-info

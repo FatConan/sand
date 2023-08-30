@@ -1,6 +1,5 @@
-from entities.resources.lessresource import LessResource
-from entities.resources.resource import PlainResource
-
+from sand.entities.resources.lessresource import LessResource
+from sand.entities.resources.resource import PlainResource
 
 class ResourceSelector:
     selection_options = {

@@ -1,5 +1,5 @@
 import os
-from config.site import Site
+from sand.config.site import Site
 from pyhocon import ConfigFactory
 
 

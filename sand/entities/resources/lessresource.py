@@ -1,6 +1,6 @@
 import os
 import lesscpy
-from entities.render_entity import RenderEntity
+from sand.entities.render_entity import RenderEntity
 
 
 class LessResource(RenderEntity):

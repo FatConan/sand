@@ -5,10 +5,11 @@ import sys
 import uuid
 
 import markdown
-
-from config.default.site_data_processor import Plugin as DefaultPlugin
-from entities.page import Page
 from jinja2 import environment
+
+from sand.config.default.site_data_processor import Plugin as DefaultPlugin
+from sand.entities.page import Page
+from sand.helpers.progress import Progress
 
 
 class Site(object):
@@ -82,7 +83,7 @@ class Site(object):
         except ImportError:
             # Try the builtins
             try:
-                instance = importlib.import_module("plugin.builtins.%s" % module).Plugin()
+                instance = importlib.import_module("sand.plugin.builtins.%s" % module).Plugin()
                 print("Built-in plugin '%s' loaded" % module)
                 return instance
             except ImportError:
@@ -99,9 +100,12 @@ class Site(object):
 
     def render(self):
         shutil.rmtree(os.path.abspath(self.output_root), ignore_errors=True)
+        progress = Progress()
 
         for page in self.pages:
+            progress.spinner("PAGES %s")
             page.render(self.environment)
 
         for resource in self.resources:
+            progress.spinner("RESOURCES %s")
             resource.render(self.environment)
