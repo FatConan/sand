@@ -1,3 +1,3 @@
-from __init__ import main
+from sand import main
 
 main()

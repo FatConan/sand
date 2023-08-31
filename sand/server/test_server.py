@@ -9,6 +9,7 @@ def simple_handler(site):
 
     return SimpleSiteServer
 
+
 class Servers:
     def __init__(self):
         self.BASE_PORT = 9000

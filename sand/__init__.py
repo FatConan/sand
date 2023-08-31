@@ -59,6 +59,12 @@ This is a new sand site.
 """
 
 
+def main_processor(sites, serve=False):
+    perform_render(sites)
+
+    if serve:
+        serve_render(sites)
+
 @click.command(context_settings={"ignore_unknown_options": True})
 @click.argument('project_location')
 @click.option("--page", nargs=1, default=None, help="Generate a new page in the provided site")
@@ -73,12 +79,7 @@ def main(project_location, page=None, site=None, serve=False, config_override=()
     if page is None and site is None:
         if os.path.exists(project_location):
             sites = ConfigLoader().load(click.format_filename(project_location), config_overrides)
-            perform_render(sites)
-
-        if serve:
-            serve_render(sites)
-
-
+            main_processor(sites, serve)
     elif page is not None:
         create_new_page(page)
     elif site is not None:

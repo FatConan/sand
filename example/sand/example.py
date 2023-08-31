@@ -1,11 +1,7 @@
-class Plugin:
-    def configure(self, site_data, site):
-        pass
+from sand.plugin import SandPlugin
 
-    #Called during the parsing phase of the processing
-    def parse(self, site_data, site):
-        pass
 
+class Plugin(SandPlugin):
     @staticmethod
     def nl2br(value):
         return value.replace("\n", "<br />")
