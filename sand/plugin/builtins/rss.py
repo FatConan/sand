@@ -3,8 +3,10 @@ import json
 
 import rfeed
 
+from sand.plugin import SandPlugin
 
-class Plugin:
+
+class Plugin(SandPlugin):
     @staticmethod
     def generate_feed(config, pages):
         feed = rfeed.Feed(
@@ -16,9 +18,6 @@ class Plugin:
             items=pages,
         )
         return feed.rss()
-
-    def configure(self, site_data, site):
-        pass
 
     # Called during the parsing phase of the processing
     @staticmethod
@@ -62,6 +61,3 @@ class Plugin:
             "static_content": rss_content
         }
         site.add_page(page_dict)
-
-    def add_render_context(self, page, environment, data):
-        pass

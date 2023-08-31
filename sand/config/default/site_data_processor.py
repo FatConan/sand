@@ -5,7 +5,7 @@ import re
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from sand.entities.resources.resource_selector import ResourceSelector
-from sand.plugin.plugin import SandPlugin
+from sand.plugin import SandPlugin
 
 
 class Plugin(SandPlugin):

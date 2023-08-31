@@ -1,5 +1,7 @@
 import json
 
+from sand.plugin import SandPlugin
+
 
 class JavaScriptExtensions:
     def __init__(self):
@@ -37,7 +39,7 @@ class JavaScriptExtensions:
         return "\n".join(headers)
 
 
-class Plugin:
+class Plugin(SandPlugin):
     def __init__(self):
         self.es6css = JavaScriptExtensions()
 
@@ -51,9 +53,6 @@ class Plugin:
 
         for script in es6css_config.get("scripts", []):
             self.es6css.add_script(script)
-
-    def parse(self, site_data, site):
-        pass
 
     def add_render_context(self, page, environment, data):
         data["ES6CSS"] = self.es6css
