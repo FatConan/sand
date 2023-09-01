@@ -3,6 +3,7 @@ import os
 import shutil
 import sys
 import uuid
+from traceback import format_exc
 
 import markdown
 from jinja2 import environment
@@ -72,12 +73,11 @@ class Site(object):
     def load_plugin(self, root, module):
         # Plugins may be loaded from the project or from the builtins. Check the externals first then
         # try the builtins folder
+        PLUGINS_MODULE = "sandplugins"
         try:
             root_path = os.path.abspath(root)
-            package = "%s.sand" % os.path.split(root_path)[-1]
-            module_path = os.path.abspath(os.path.join(root, "sandplugins"))
-            sys.path.append(module_path)
-            instance = importlib.import_module(module, package=package).Plugin()
+            sys.path.append(root_path)
+            instance = importlib.import_module("%s.%s" % (PLUGINS_MODULE, module), package=PLUGINS_MODULE).Plugin()
             print("External plugin '%s' loaded" % module)
             return instance
         except ImportError:
