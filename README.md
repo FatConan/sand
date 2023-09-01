@@ -9,16 +9,33 @@ with added wildcard support, support for resources, and some other functions tha
 This **README** serves as both documentation for this tool as well as an example project.  While this file contains the content, 
 there are a number of pieces of additional metadata required to configure the **Sand** project, which are provided by the accompanying `site.conf` HOCON file.
 
+### Installing with Pip
+
+To install `sand` as a module run `pip install .` from within the cloned folder.
+Once installed `sand` can be used by running:
+
+```
+sand
+```
+
+### Generating the documentation
+
 To see **Sand** generate this documentation, clone this repository and run:
 
 ```
-python3 sand.py example --serve
+python3 sand example --serve
+```
+
+Or
+
+```
+sand example --serve
 ```
 
 from within the checked out folder. This will build this documentation and start a development server at [http://localhost:9000](http://localhost:9000) serving it. Omitting the `--serve` argument will build this documentation without starting a server. 
 
-```markdown
-python3 sand.py example
+```
+sand example
 ```
 
 ## A Note on Security
@@ -135,11 +152,11 @@ The default handling of a resource file is simply to copy it from the source loc
 To get started with **Sand**:
 
     # Create project layout
-    python3 sand.py <project_folder> --site <project_name>
+    sand <project_folder> --site <project_name>
     # Generate site
-    python3 sand.py <project_folder>
+    sand <project_folder>
     # Add a new page to an existing project
-    python3 sand.py <project_folder> --page <page_name>
+    sand <project_folder> --page <page_name>
 
 ### Folder Structure
 
@@ -147,7 +164,7 @@ The structure of a project is pretty flexible and can be expanded and contracted
 a common example structure (and that created by the built in site generator) is:
 
     .
-    ├── sand (optional)
+    ├── sandplugins (optional)
     |   └── plugin.py (defines a plugin class)
     ├── pages
     │   └── ... (.md files)
@@ -243,11 +260,11 @@ variable (and in the template above passed through `safe` to avoid it being esca
  
 ## Generating
 
-To generate a particular site invoke `sand.py` with the location of the project's
+To generate a particular site invoke `sand` with the location of the project's
 root folder.
 
 ```
-python3 sand.py <project_folder>
+sand <project_folder>
 ```
 
 ## Example
@@ -258,7 +275,7 @@ the example folder.
 You can build it by running:
 
 ```
-python3 sand.py example
+sand example
 ```
 
 ## Advanced Usage
@@ -292,7 +309,7 @@ dictionary of all the project's pages and metadata.
 
 ### Plugins
 
-A site is represented by an instance of the [Site class](https://github.com/FatConan/sand/blob/master/config/site.py). When the site is instantiated it will read a list of plugin names from the `site.conf`. It will then attempt to instantiate the plugins by loading a module named `<plugin-name>.py` first from the project's `sand` folder, then from **Sand's** own `plugin\builtins` folder. Should the module load. the plugin will be instantiated by calling `Plugin()` from the loaded module. 
+A site is represented by an instance of the [Site class](https://github.com/FatConan/sand/blob/master/config/site.py). When the site is instantiated it will read a list of plugin names from the `site.conf`. It will then attempt to instantiate the plugins by loading a module named `<plugin-name>.py` first from the project's `sandplugins` folder, then from **Sand's** own `plugin\builtins` folder. Should the module load. the plugin will be instantiated by calling `Plugin()` from the loaded module. 
 
 In this example's `site.conf` we list three plugins:
 
@@ -302,7 +319,7 @@ In this example's `site.conf` we list three plugins:
         "example"
     ]
 
-This loads two built-in plugins (`es6css` and `rss`) from the `plugin\builtins` folder and a third plugin (`example`) from the `example\sand\` folder.
+This loads two built-in plugins (`es6css` and `rss`) from the `plugin\builtins` folder and a third plugin (`example`) from the `example\sandplugins\` folder.
 
 A plugin is defined as a class named `Plugin` requiring the following methods:
 
@@ -316,11 +333,19 @@ A plugin is defined as a class named `Plugin` requiring the following methods:
         def add_render_context(self, page, environment, data):
             pass 
 
+With `sand` installed using pip, you can optionally base your Plugin class on the `SandPlugin` class like so:
+
+    from sand.plugin import SandPlugin
+    
+    class Plugin(SandPlugin):
+        pass
+
+Which will provide all the stubs for you allowing you to only override those methods you require.
 
 You can create a plugin named `<name>` by creating a class named `Plugin` in a `<name>.py` file within a folder named `sand` under your project root. Your plugin will have the ability to hook into the **Sand** process at both the stage at which the site structure is being constructed, and at the point the content is rendered. This can be done by modifying the `parse` and `add_render_context` methods. 
 
     .
-    ├── sand
+    ├── sandplugins
     │   └── <plugin>.py
     └── site.conf
 
