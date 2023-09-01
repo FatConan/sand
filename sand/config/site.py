@@ -75,7 +75,7 @@ class Site(object):
         try:
             root_path = os.path.abspath(root)
             package = "%s.sand" % os.path.split(root_path)[-1]
-            module_path = os.path.abspath(os.path.join(root, "sand"))
+            module_path = os.path.abspath(os.path.join(root, "sandplugins"))
             sys.path.append(module_path)
             instance = importlib.import_module(module, package=package).Plugin()
             print("External plugin '%s' loaded" % module)
