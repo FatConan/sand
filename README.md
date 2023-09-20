@@ -379,6 +379,9 @@ By way of example, if we add a list of terms to pages as "tags" in their metadat
     ]
 
 We can then create a new `Plugin` class that will allow us to fetch the pages by their tag like so:
+    
+    from sand.plugin import SandPlugin
+
 
     class Tags:
         def __init__(self, pages):
@@ -388,16 +391,13 @@ We can then create a new `Plugin` class that will allow us to fetch the pages by
                    return [p for p in self.pages if tag in p.data("tags", [])]
 
 
-    class Plugin:
+    class Plugin(SandPlugin):
         def __init__(self):
             self.tags = None
 
         def configure(self, site_data, site):
             self.tags = Tags(site.pages)
-    
-        def parse(self, site_data, site):
-            pass
-    
+
         def add_render_context(self, page, environment, data):
             data["TAGS"] = self.tags
 
@@ -411,14 +411,7 @@ We could further augment the Tags class to provide the data for creating a tag c
 
 The `add_render_context` method also allows you to augment the `jinja2` environment object (as passed as an argument to it) so that you can extend the templating functionality for a project. The plugin in `example.py` of this documentation's project adds a filter named `nl2br` that replaces new lines with html breaks.  
 
-    class Plugin:
-        def configure(self, site_data, site):
-            pass
-    
-        #Called during the parsing phase of the processing
-        def parse(self, site_data, site):
-            pass
-    
+    class Plugin(SandPlugin):
         @staticmethod
         def nl2br(value):
             return value.replace("\n", "<br />")
