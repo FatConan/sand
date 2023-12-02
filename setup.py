@@ -19,7 +19,6 @@ setup(
     author_email='ian@headwillcollapse.net',
     description='Yet another static site generator',
     install_requires = [
-        'wheel',
         'Click>=7.1.2',
         'Jinja2>=2.11.3',
         'lesscpy>=0.15.1',

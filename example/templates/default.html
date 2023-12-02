@@ -25,17 +25,13 @@
         </div>
         <script type="module">
             import "jquery";
-
             const $returnToTop = $("#returnToTop");
-
             {% with a="This is a test", b="So is this" %}
                 window.test = "{{ a }}";
             {% endwith %}
-
             window.onscroll = function(){
                 scrollFunction();
             };
-
             function scrollFunction(){
                 if(document.body.scrollTop > 20 || document.documentElement.scrollTop > 20){
                     $returnToTop.css("display", "block");
