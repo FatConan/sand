@@ -28,7 +28,8 @@ setup(
         'urllib3>=1.26.5',
         'pathlib>=1.0.1',
         'rfeed>=1.1.1',
-        'six>=1.15.0'
+        'six>=1.15.0',
+        'htmlmin>=0.1.12'
     ],
     entry_points={
         'console_scripts': [

@@ -1,8 +1,10 @@
-from sand.entities.render_entity import RenderEntity
-import pathlib
 import os
+import pathlib
+import htmlmin
 
 from jinja2.exceptions import TemplateNotFound
+
+from sand.entities.render_entity import RenderEntity
 
 
 class Page(RenderEntity):
@@ -32,7 +34,7 @@ class Page(RenderEntity):
         self.convert_to_template_html()
 
     def to_dict(self, environment):
-        data =  {
+        data = {
             'GLOBALS': {
                 'site': self.site,
                 'site_root': self.site.root,
@@ -84,13 +86,16 @@ class Page(RenderEntity):
                     local_template_data[key] = value
             self.page_data.update(local_template_data)
 
-    def render(self, environment):
+    def render(self, environment, compress=True):
         try:
             os.makedirs(os.path.split(self.target_path)[0], exist_ok=True)
             with open(self.target_path, "w") as target_file:
-                target_file.write(
-                    environment.get_template(self.page_data["template"]).render(self.to_dict(environment))
-                )
+                output = environment.get_template(self.page_data["template"]).render(self.to_dict(environment))
+
+                if compress:
+                    output = self.site.minify(output)
+
+                target_file.write(output)
         except TemplateNotFound as tnf:
             print("Requested template (%s) not found, skipping" % tnf)
         except KeyError as ke:
@@ -98,8 +103,11 @@ class Page(RenderEntity):
                 print('Missing template, rendering markdown only for (%s)' % self.source_path)
                 os.makedirs(os.path.split(self.target_path)[0], exist_ok=True)
                 with open(self.target_path, "w") as target_file:
-                    target_file.write(
-                        self.to_dict(environment)["content"]
-                    )
+                    output = self.to_dict(environment)["content"]
+
+                    if compress:
+                        output = self.site.minify(output)
+
+                    target_file.write(output)
             else:
                 raise

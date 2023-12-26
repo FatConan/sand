@@ -59,8 +59,8 @@ This is a new sand site.
 """
 
 
-def main_processor(sites, serve=False):
-    perform_render(sites)
+def main_processor(sites, serve=False, compress=True):
+    perform_render(sites, compress)
 
     if serve:
         serve_render(sites)
@@ -70,8 +70,9 @@ def main_processor(sites, serve=False):
 @click.option("--page", nargs=1, default=None, help="Generate a new page in the provided site")
 @click.option("--site", nargs=1, default=None, help="Generate a new basic site")
 @click.option("--config-override", "-c", type=str, multiple=True)
+@click.option("--uncompressed", is_flag=True, help="Do not compress the output HTML")
 @click.option("--serve", is_flag=True, help="Run a server serving the generated site")
-def main(project_location, page=None, site=None, serve=False, config_override=()):
+def main(project_location, page=None, site=None, serve=False, compress=True, config_override=()):
     config_overrides = {}
     if config_override:
         config_overrides = dict(arg.split("=") for arg in config_override)
@@ -79,18 +80,18 @@ def main(project_location, page=None, site=None, serve=False, config_override=()
     if page is None and site is None:
         if os.path.exists(project_location):
             sites = ConfigLoader().load(click.format_filename(project_location), config_overrides)
-            main_processor(sites, serve)
+            main_processor(sites, serve, compress)
     elif page is not None:
         create_new_page(page)
     elif site is not None:
         create_new_site(site, project_location)
 
 
-def perform_render(sites):
+def perform_render(sites, compress):
     # Render
     for i, site in enumerate(sites):
         print("Rendering - %s to %s" % (site.root, site.output_root))
-        site.render()
+        site.render(compress)
 
 
 def serve_render(sites):

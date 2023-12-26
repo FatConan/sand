@@ -3,8 +3,8 @@ import os
 import shutil
 import sys
 import uuid
-from traceback import format_exc
 
+import htmlmin
 import markdown
 from jinja2 import environment
 
@@ -31,6 +31,7 @@ class Site(object):
         self.renderer = markdown.Markdown(
             extensions=['extra', 'meta', 'toc', 'tables', 'abbr']
         )
+        self.minifier = htmlmin.Minifier(remove_optional_attribute_quotes=False, reduce_boolean_attributes=False)
 
         self.pages = []
         self.page_reference = {}
@@ -54,6 +55,9 @@ class Site(object):
             plugin.configure(site_data, self)
 
         self._parse(site_data)
+
+    def minify(self, raw_html):
+        return self.minifier.minify(raw_html)
 
     def add_page(self, page_dict):
         page = Page(self, **page_dict)
@@ -98,13 +102,13 @@ class Site(object):
         for plugin in self._plugins:
             plugin.parse(data, self)
 
-    def render(self):
+    def render(self, compress=True):
         shutil.rmtree(os.path.abspath(self.output_root), ignore_errors=True)
         progress = Progress()
 
         for page in self.pages:
             progress.spinner("PAGES %s")
-            page.render(self.environment)
+            page.render(self.environment, compress)
 
         for resource in self.resources:
             progress.spinner("RESOURCES %s")
