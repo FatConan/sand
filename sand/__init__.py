@@ -72,7 +72,7 @@ def main_processor(sites, serve=False, compress=True):
 @click.option("--config-override", "-c", type=str, multiple=True)
 @click.option("--uncompressed", is_flag=True, help="Do not compress the output HTML")
 @click.option("--serve", is_flag=True, help="Run a server serving the generated site")
-def main(project_location, page=None, site=None, serve=False, compress=True, config_override=()):
+def main(project_location, page=None, site=None, serve=False, uncompressed=False, config_override=()):
     config_overrides = {}
     if config_override:
         config_overrides = dict(arg.split("=") for arg in config_override)
@@ -80,7 +80,7 @@ def main(project_location, page=None, site=None, serve=False, compress=True, con
     if page is None and site is None:
         if os.path.exists(project_location):
             sites = ConfigLoader().load(click.format_filename(project_location), config_overrides)
-            main_processor(sites, serve, compress)
+            main_processor(sites, serve, not uncompressed)
     elif page is not None:
         create_new_page(page)
     elif site is not None:
