@@ -26,5 +26,5 @@ class RenderEntity(object):
     def as_dict(self):
         return {}
 
-    def render(self, environment):
+    def render(self, environment, compress=True):
         pass
