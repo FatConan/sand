@@ -1,6 +1,5 @@
 import os
 import pathlib
-import htmlmin
 
 from jinja2.exceptions import TemplateNotFound
 
