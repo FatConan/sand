@@ -49,11 +49,11 @@ class Servers:
             server.join()
 
     def for_sites(self, sites):
-        STOP_EVENT = threading.Event()
+        stop_event = threading.Event()
 
         port = self.BASE_PORT
         for site in sites:
-            server_thread = Server(STOP_EVENT, site, port)
+            server_thread = Server(stop_event, site, port)
             self.servers[port] = server_thread
             server_thread.start()
             port += 1
