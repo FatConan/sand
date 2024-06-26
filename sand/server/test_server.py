@@ -3,6 +3,7 @@ import socketserver
 import threading
 from time import sleep
 
+
 def simple_handler(site):
     class SimpleSiteServer(http.server.SimpleHTTPRequestHandler):
         def __init__(self, *args, **kwargs):
@@ -36,7 +37,6 @@ class Server(threading.Thread):
             self.server.join()
 
 
-
 class Servers:
     def __init__(self):
         self.BASE_PORT = 9000
@@ -64,7 +64,3 @@ class Servers:
             except KeyboardInterrupt:
                 self.stop_servers(STOP_EVENT)
                 break
-
-
-
-
