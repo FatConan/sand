@@ -62,5 +62,5 @@ class Servers:
             try:
                 sleep(5)
             except KeyboardInterrupt:
-                self.stop_servers(STOP_EVENT)
+                self.stop_servers(stop_event)
                 break
