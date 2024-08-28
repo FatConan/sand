@@ -72,7 +72,7 @@ def main_processor(sites, serve=False, compress=True, port=9000):
 @click.option("--config-override", "-c", type=str, multiple=True)
 @click.option("--uncompressed", is_flag=True, help="Do not compress the output HTML")
 @click.option("--serve", is_flag=True, help="Run a server serving the generated site")
-@click.option("--port", "-p", type=int, multiple=False, help="Starting port for the test server")
+@click.option("--port", "-p", type=int, default=9000, multiple=False, help="Starting port for the test server")
 def main(project_location, page=None, site=None, serve=False, port=9000, uncompressed=False, config_override=()):
     config_overrides = {}
     if config_override:
