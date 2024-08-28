@@ -81,7 +81,7 @@ def main(project_location, page=None, site=None, serve=False, port=9000, uncompr
     if page is None and site is None:
         if os.path.exists(project_location):
             sites = ConfigLoader().load(click.format_filename(project_location), config_overrides)
-            main_processor(sites, serve, not uncompressed)
+            main_processor(sites, serve, not uncompressed, port)
     elif page is not None:
         create_new_page(page)
     elif site is not None:
