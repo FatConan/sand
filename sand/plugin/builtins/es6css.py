@@ -6,14 +6,27 @@ from sand.plugin import SandPlugin
 class JavaScriptExtensions:
     def __init__(self):
         self.CDNs = {}
+        self.CDN_details = {}
         self.CSSs = []
         self.scripts = []
 
         self.base_link = """<link rel="stylesheet" href="%s" />"""
-        self.base_tag = """<script type="module" src="%s"></script>"""
+        self.base_tag = """<script type="module" src="%(url)s" 
+            integrity="%(integrity)s" 
+            rossorigin="%(crossorigin)s"
+            referrerpolicy="%(referrerpolicy)s"></script>"""
         self.base_importmap = """<script type="importmap">%s</script>"""
 
-    def add_CDN(self, name, url):
+    def script_details(self, url, integrity="", crossorigin="", referrerpolicy=""):
+        return  {
+            "url": url,
+            "integrity": integrity,
+            "crossorigin": crossorigin,
+            "referrerpolicy": referrerpolicy
+        }
+
+    def add_CDN(self, name, url, integrity="", crossorigin="", referrerpolicy=""):
+        self.CDN_details[name] = self.script_details(url, integrity, crossorigin, referrerpolicy)
         self.CDNs[name] = url
 
     def add_css(self, url):
@@ -30,11 +43,11 @@ class JavaScriptExtensions:
 
         headers.append(self.base_importmap % json.dumps({"imports": self.CDNs}))
 
-        for name, url in self.CDNs.items():
-            headers.append(self.base_tag % url)
+        for name, details in self.CDN_details.items():
+            headers.append(self.base_tag % details)
 
         for url in self.scripts:
-            headers.append(self.base_tag % url)
+            headers.append(self.base_tag % self.script_details(url))
 
         return "\n".join(headers)
 
@@ -49,7 +62,10 @@ class Plugin(SandPlugin):
             self.es6css.add_css(css)
 
         for cdn in es6css_config.get("CDN", []):
-            self.es6css.add_CDN(cdn.get("alias"), cdn.get("src"))
+            self.es6css.add_CDN(cdn.get("alias"), cdn.get("src"),
+                                cdn.get("integrity", ""),
+                                cdn.get("crossorigin", ""),
+                                cdn.get("referrerpolicy", ""))
 
         for script in es6css_config.get("scripts", []):
             self.es6css.add_script(script)

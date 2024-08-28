@@ -59,11 +59,11 @@ This is a new sand site.
 """
 
 
-def main_processor(sites, serve=False, compress=True):
+def main_processor(sites, serve=False, compress=True, port=9000):
     perform_render(sites, compress)
 
     if serve:
-        serve_render(sites)
+        serve_render(sites, port)
 
 @click.command(context_settings={"ignore_unknown_options": True})
 @click.argument('project_location')
@@ -72,7 +72,8 @@ def main_processor(sites, serve=False, compress=True):
 @click.option("--config-override", "-c", type=str, multiple=True)
 @click.option("--uncompressed", is_flag=True, help="Do not compress the output HTML")
 @click.option("--serve", is_flag=True, help="Run a server serving the generated site")
-def main(project_location, page=None, site=None, serve=False, uncompressed=False, config_override=()):
+@click.option("--port", "-p", type=int, mulitple=False, help="Starting port for the test server")
+def main(project_location, page=None, site=None, serve=False, port=9000, uncompressed=False, config_override=()):
     config_overrides = {}
     if config_override:
         config_overrides = dict(arg.split("=") for arg in config_override)
@@ -94,9 +95,9 @@ def perform_render(sites, compress):
         site.render(compress)
 
 
-def serve_render(sites):
+def serve_render(sites, port=9000):
     from .server.test_server import Servers
-    servers = Servers()
+    servers = Servers(port=port)
     servers.for_sites(sites)
 
 

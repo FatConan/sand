@@ -38,8 +38,8 @@ class Server(threading.Thread):
 
 
 class Servers:
-    def __init__(self):
-        self.BASE_PORT = 9000
+    def __init__(self, port=9000):
+        self.BASE_PORT = port
         self.servers = {}
 
     def stop_servers(self, stop_event):
