@@ -13,7 +13,7 @@ class JavaScriptExtensions:
         self.base_link = """<link rel="stylesheet" href="%s" />"""
         self.base_tag = """<script type="module" src="%(url)s" 
             integrity="%(integrity)s" 
-            rossorigin="%(crossorigin)s"
+            crossorigin="%(crossorigin)s"
             referrerpolicy="%(referrerpolicy)s"></script>"""
         self.base_importmap = """<script type="importmap">%s</script>"""
 
