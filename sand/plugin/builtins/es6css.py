@@ -48,10 +48,10 @@ class JavaScriptExtensions:
         headers.append(self.base_importmap % json.dumps({"imports": self.CDNs}))
 
         for name, details in self.CDN_details.items():
-            headers.append(self.base_tag % details)
+            headers.append(self.tag(details))
 
-        for url in self.scripts:
-            headers.append(self.base_tag % self.script_details(url))
+        for details in self.scripts:
+            headers.append(self.tag(details))
 
         return "\n".join(headers)
 
