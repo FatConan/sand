@@ -2,7 +2,7 @@ import json
 
 from sand.plugin import SandPlugin
 
-SCRIPT_ATTRS = ["alias", "src",  "async", "crossorigin",  "defer", "integrity",  "nomodule", "referrerpolicy"]
+SCRIPT_ATTRS = ["alias", "src",  "async", "crossorigin",  "defer", "integrity",  "nomodule", "referrerpolicy", "data"]
 
 class JavaScriptExtensions:
     def __init__(self):
@@ -15,8 +15,8 @@ class JavaScriptExtensions:
         self.base_tag = """<script type="module" %s></script>"""
         self.base_importmap = """<script type="importmap">%s</script>"""
 
-    def script_details(self, src,  _async="", crossorigin="",  defer="", integrity="",  nomodule="", referrerpolicy=""):
-        return  {
+    def script_details(self, src,  _async="", crossorigin="",  defer="", integrity="",  nomodule="", referrerpolicy="", data=None):
+        details = {
             "src": src,
             "async": _async,
             "crossorigin": crossorigin,
@@ -26,14 +26,20 @@ class JavaScriptExtensions:
             "referrerpolicy": referrerpolicy
         }
 
-    def add_CDN(self, alias="", src="", _async="async", crossorigin="",  defer="", integrity="",  nomodule="", referrerpolicy=""):
+        if data is not None:
+            for key, value in data.items():
+                details["data-%s" % key] = value
+
+        return details
+
+    def add_CDN(self, alias="", src="", _async="", crossorigin="",  defer="", integrity="",  nomodule="", referrerpolicy="", data=None):
         self.CDN_details[alias] = self.script_details(src, _async, crossorigin, defer, integrity, nomodule, referrerpolicy)
         self.CDNs[alias] = src
 
     def add_css(self, url):
         self.CSSs.append(url)
 
-    def add_script(self, src="",  _async="", crossorigin="",  defer="defer", integrity="",  nomodule="", referrerpolicy=""):
+    def add_script(self, src="",  _async="", crossorigin="",  defer="defer", integrity="",  nomodule="", referrerpolicy="", data=None):
         self.scripts.append(self.script_details(src, _async, crossorigin, defer, integrity, nomodule, referrerpolicy))
 
     def tag(self, details_dict):
