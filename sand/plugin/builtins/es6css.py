@@ -11,13 +11,15 @@ class JavaScriptExtensions:
         self.CSSs = []
         self.scripts = []
 
-        self.base_link = """<link rel="stylesheet" href="%s" />"""
-        self.base_tag = """<script type="module" %s></script>"""
-        self.base_importmap = """<script type="importmap">%s</script>"""
+        self.base_link = """<link rel="stylesheet" href="{src}" />"""
+        self.base_tag = """<script {extras}>{content}</script>"""
+        self.base_importmap = """<script type="importmap">{map}</script>"""
+        self.base_style = """<style>{content}</style>"""
 
-    def script_details(self, src,  _async="", crossorigin="",  defer="", integrity="",  nomodule="", referrerpolicy="", data=None):
+    def script_details(self, src,  _type, _async="", crossorigin="",  defer="", integrity="",  nomodule="", referrerpolicy="", data=None):
         details = {
             "src": src,
+            "type": _type,
             "async": _async,
             "crossorigin": crossorigin,
             "defer": defer,
@@ -33,17 +35,32 @@ class JavaScriptExtensions:
         return details
 
     def add_CDN(self, alias="", src="", _async="", crossorigin="",  defer="", integrity="",  nomodule="", referrerpolicy="", data=None):
-        self.CDN_details[alias] = self.script_details(src, _async, crossorigin, defer, integrity, nomodule, referrerpolicy)
+        self.CDN_details[alias] = self.script_details(src, "module", _async, crossorigin, defer, integrity, nomodule, referrerpolicy)
         self.CDNs[alias] = src
 
     def add_css(self, url):
         self.CSSs.append(url)
 
     def add_script(self, src="",  _async="", crossorigin="",  defer="defer", integrity="",  nomodule="", referrerpolicy="", data=None):
-        self.scripts.append(self.script_details(src, _async, crossorigin, defer, integrity, nomodule, referrerpolicy))
+        self.scripts.append(self.script_details(src, "module", _async, crossorigin, defer, integrity, nomodule, referrerpolicy))
 
     def tag(self, details_dict):
-        return self.base_tag % " ".join(['%s="%s"' % (key, value) for key, value in details_dict.items() if value])
+        return self.base_tag.format(extras=" ".join(['%s="%s"' % (key, value) for key, value in details_dict.items() if value]), content="")
+
+    def fouc_css(self):
+        return self.base_style.format(content="html.hidden{display: none;}")
+
+    def fouc_script(self):
+        load_function = """
+        const htmlEl = document.getElementsByTagName("html")[0];
+        let classes = htmlEl.getAttribute("class") + " hidden";
+        htmlEl.setAttribute("class", classes);
+        document.addEventListener("DOMContentLoaded", () => {
+            let classes = htmlEl.getAttribute("class");
+            htmlEl.setAttribute("class", classes.replace("hidden", "")); 
+        });
+        """
+        return self.base_tag.format(extras="", content=load_function)
 
     def headers(self):
         headers = []
@@ -51,7 +68,7 @@ class JavaScriptExtensions:
         for url in self.CSSs:
             headers.append(self.base_link % url)
 
-        headers.append(self.base_importmap % json.dumps({"imports": self.CDNs}))
+        headers.append(self.base_importmap.format(map=json.dumps({"imports": self.CDNs})))
 
         for name, details in self.CDN_details.items():
             headers.append(self.tag(details))
