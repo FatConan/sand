@@ -7,3 +7,4 @@ class SandPlugin:
 
     def add_render_context(self, page, environment, data):
         pass
+
