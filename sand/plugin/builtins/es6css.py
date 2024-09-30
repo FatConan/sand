@@ -66,7 +66,6 @@ class JavaScriptExtensions:
         headers = []
 
         for url in self.CSSs:
-            print(url)
             headers.append(self.base_link.format(src=url))
 
         headers.append(self.base_importmap.format(map=json.dumps({"imports": self.CDNs})))
