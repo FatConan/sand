@@ -3,9 +3,6 @@ import os
 import click
 
 from sand.config.config_loader import ConfigLoader
-import sand.builder.components as builder_components
-
-
 
 def main_processor(sites, serve=False, compress=True, port=9000):
     perform_render(sites, compress)
@@ -50,6 +47,7 @@ def serve_render(sites, port=9000):
 
 
 def create_new_page(page):
+    from .builder import components as builder_components
     # Generate a new page
     if not os.path.exists(page):
         os.makedirs(os.path.split(page)[0], exist_ok=True)
@@ -61,6 +59,7 @@ def create_new_page(page):
 
 
 def create_new_site(site, project_location):
+    from .builder import components as builder_components
     site_json_string = builder_components.SITE_CONF_BASIC % site
     os.makedirs(site, exist_ok=True)
 
