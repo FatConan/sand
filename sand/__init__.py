@@ -3,60 +3,8 @@ import os
 import click
 
 from sand.config.config_loader import ConfigLoader
+import sand.builder.components as builder_components
 
-PAGE_TEMPLATE = """title: [Add a page title]
-template: [The template used to render]
-
-# Page Header
-
-This new markdown page will need to either be added to your site.json for rendering or may be picked up automatically if 
-contained in a folder using wildcard rules to render.
-
-"""
-
-SITE_JSON_BASIC = """{"sites": [
-    {
-        "root": "%s",
-        "output_root": "output",
-        "pages": [
-            {
-                "source": "./pages/*.md",
-                "target": "*.html"
-            }
-        ],
-        "templates": [
-            "templates"
-        ],
-        "resources": [
-            {
-                "source": "./resources",
-                "target": "./resources"
-            }
-        ]
-    }
-]}"""
-
-TEMPLATE_HTML = """<!DOCTYPE html>
-<html>
-    <head>
-        <title>{{ DATA.get("title") }}</title>
-        <link rel="stylesheet" type="text/css" href="/resources/css/style.css" />
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
-    </head>
-    <body>
-        {{ content|safe }}
-    </body>
-</html>
-"""
-
-INDEX_MD = """title: Welcome to Sand
-template: base.html
-
-# Welcome to your new site
-
-This is a new sand site.
-
-"""
 
 
 def main_processor(sites, serve=False, compress=True, port=9000):
@@ -106,18 +54,18 @@ def create_new_page(page):
     if not os.path.exists(page):
         os.makedirs(os.path.split(page)[0], exist_ok=True)
         with open(page, "w") as out:
-            out.write(PAGE_TEMPLATE)
+            out.write(builder_components.PAGE_TEMPLATE)
         click.echo("New page %s created" % page)
     else:
         click.echo("The path provided for the new page already exists and cannot be created.")
 
 
 def create_new_site(site, project_location):
-    site_json_string = SITE_JSON_BASIC % site
+    site_json_string = builder_components.SITE_CONF_BASIC % site
     os.makedirs(site, exist_ok=True)
 
-    if not os.path.exists(os.path.join(project_location, "site.json")):
-        with open(os.path.join(project_location, "site.json"), "w") as json_file:
+    if not os.path.exists(os.path.join(project_location, "site.conf")):
+        with open(os.path.join(project_location, "site.conf"), "w") as json_file:
             json.dump(json.loads(site_json_string), json_file)
 
         os.makedirs(os.path.join(project_location, "resources/css"))
@@ -127,10 +75,18 @@ def create_new_site(site, project_location):
         os.makedirs(os.path.join(project_location, "pages"))
 
         with open(os.path.join(project_location, "templates/base.html"), "w") as template_file:
-            template_file.write(TEMPLATE_HTML)
+            template_file.write(builder_components.TEMPLATE_HTML)
 
         with open(os.path.join(project_location, "pages/index.md"), "w") as template_file:
-            template_file.write(INDEX_MD)
+            template_file.write(builder_components.INDEX_MD)
+
+        with open(os.path.join(project_location, "resources/css/reset.less"), "w") as less_file:
+            less_file.write(builder_components.RESET_LESS)
+
+        with open(os.path.join(project_location, "resources/css/style.less"), "w") as less_file:
+            less_file.write(builder_components.STYLE_LESS)
+
+
 
     else:
         click.echo("A site.json file already exists in this folder")
