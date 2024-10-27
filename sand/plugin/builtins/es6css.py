@@ -62,7 +62,7 @@ class JavaScriptExtensions:
         """
         return self.base_tag.format(extras="", content=load_function)
 
-    def headers(self):
+    def headers(self, libraries_only=False):
         headers = []
 
         for url in self.CSSs:
@@ -73,11 +73,18 @@ class JavaScriptExtensions:
         for name, details in self.CDN_details.items():
             headers.append(self.tag(details))
 
-        for details in self.scripts:
-            headers.append(self.tag(details))
+        if not libraries_only:
+            for details in self.scripts:
+                headers.append(self.tag(details))
 
         return "\n".join(headers)
 
+    def script_footer(self):
+        footers = []
+        for details in self.scripts:
+            footers.append(self.tag(details))
+
+        return "\n".join(footers)
 
 class Plugin(SandPlugin):
     def __init__(self):

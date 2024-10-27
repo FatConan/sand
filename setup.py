@@ -20,7 +20,7 @@ setup(
     description='Yet another static site generator',
     install_requires = [
         'Click>=7.1.2',
-        'Jinja2>=2.11.3',
+        'Jinja2>=3.1.4',
         'lesscpy>=0.15.1',
         'Markdown>=3.3.1',
         'MarkupSafe>=1.1.1',
