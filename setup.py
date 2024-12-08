@@ -22,6 +22,7 @@ setup(
         'Click>=7.1.2',
         'Jinja2>=2.11.3',
         'lesscpy>=0.15.1',
+        'libsass>=0.23.0',
         'Markdown>=3.3.1',
         'MarkupSafe>=1.1.1',
         'pyhocon>=0.3.56',
