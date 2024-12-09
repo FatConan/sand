@@ -1,9 +1,12 @@
 from sand.entities.resources.lessresource import LessResource
 from sand.entities.resources.resource import PlainResource
+from sand.entities.resources.scssresource import ScssResource
+
 
 class ResourceSelector:
     selection_options = {
-        'less': LessResource
+        'less': LessResource,
+        'scss': ScssResource
     }
 
     @classmethod
