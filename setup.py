@@ -30,7 +30,7 @@ setup(
         'pathlib>=1.0.1',
         'rfeed>=1.1.1',
         'six>=1.15.0',
-        'htmlmin>=0.1.12'
+        'htmlmin2>=0.1.13'
     ],
     entry_points={
         'console_scripts': [
