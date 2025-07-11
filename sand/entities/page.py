@@ -11,6 +11,10 @@ class Page(RenderEntity):
         super().__init__(site, source, target)
         self.page_type = page_type
         self.page_data = {}
+        #The content as read from the page file
+        self.raw_content = None
+        self.content = None
+
 
         if config is not None and isinstance(config, dict):
             self.page_data.update(config)
@@ -29,7 +33,6 @@ class Page(RenderEntity):
         else:
             self.raw_content = self.page_data.get("static_content", "")
 
-        self.content = None
         self.convert_to_template_html()
 
     def to_dict(self, environment):
@@ -59,9 +62,9 @@ class Page(RenderEntity):
             plugin.add_render_context(self, environment, data)
 
         if self.page_data.get("jinja_pass", False):
-            data["content"] = environment.from_string(self.raw_content).render(data)
+            data["content"] = environment.from_string(self.content).render(data)
         else:
-            data["content"] = self.raw_content
+            data["content"] = self.content
 
         return data
 
@@ -76,7 +79,7 @@ class Page(RenderEntity):
             pass
         else:
             self.site.renderer.reset()
-            self.raw_content = self.site.renderer.convert(self.raw_content)
+            self.content = self.site.renderer.convert(self.raw_content)
             local_template_data = {}
             for key, value in self.site.renderer.Meta.items():
                 if isinstance(value, list) and len(value) == 1:
