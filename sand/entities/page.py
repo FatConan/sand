@@ -76,7 +76,7 @@ class Page(RenderEntity):
         if self.page_type == "RAW":
             # If we indicate that a page is RAW, then the text should pass unfiltered and unchanged into the final
             # document.
-            pass
+            self.content = self.raw_content
         else:
             self.site.renderer.reset()
             self.content = self.site.renderer.convert(self.raw_content)
