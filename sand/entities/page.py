@@ -7,7 +7,7 @@ from sand.entities.render_entity import RenderEntity
 
 
 class Page(RenderEntity):
-    def __init__(self, site, source, target, page_type=None, config=None):
+    def __init__(self, site, target, source=None, page_type=None, config=None):
         super().__init__(site, source, target)
         self.page_type = page_type
         self.page_data = {}
