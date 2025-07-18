@@ -11,7 +11,7 @@ setup(
     name='sand',
     version='2023.8.1.1',
     long_description=long_description,
-    packages=['sand', 'sand.config', 'sand.config.default', 'sand.plugin', 'sand.plugin.builtins', 'sand.server',
+    packages=['sand', 'sand.builder', 'sand.config', 'sand.config.default', 'sand.plugin', 'sand.plugin.builtins', 'sand.server',
               'sand.helpers', 'sand.entities', 'sand.entities.resources'],
     url='https://github.com/FatConan/sand',
     license='MIT',

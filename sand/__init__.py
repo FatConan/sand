@@ -50,7 +50,9 @@ def create_new_page(page):
     from .builder import components as builder_components
     # Generate a new page
     if not os.path.exists(page):
-        os.makedirs(os.path.split(page)[0], exist_ok=True)
+        dirs = os.path.split(page)[0]
+        if dirs:
+            os.makedirs(dirs, exist_ok=True)
         with open(page, "w") as out:
             out.write(builder_components.PAGE_TEMPLATE)
         click.echo("New page %s created" % page)
@@ -60,12 +62,12 @@ def create_new_page(page):
 
 def create_new_site(site, project_location):
     from .builder import components as builder_components
-    site_json_string = builder_components.SITE_CONF_BASIC % site
+    site_obj = builder_components.site_conf_basic(project_location)
     os.makedirs(site, exist_ok=True)
 
     if not os.path.exists(os.path.join(project_location, "site.conf")):
         with open(os.path.join(project_location, "site.conf"), "w") as json_file:
-            json.dump(json.loads(site_json_string), json_file)
+            json.dump(site_obj, json_file)
 
         os.makedirs(os.path.join(project_location, "resources/css"))
         os.makedirs(os.path.join(project_location, "resources/scripts"))
