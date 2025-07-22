@@ -18,15 +18,20 @@ def main_processor(sites, serve=False, compress=True, port=9000):
 @click.option("--uncompressed", is_flag=True, help="Do not compress the output HTML")
 @click.option("--serve", is_flag=True, help="Run a server serving the generated site")
 @click.option("--port", "-p", type=int, default=9000, multiple=False, help="Starting port for the test server")
-def main(project_location, page=None, site=None, serve=False, port=9000, uncompressed=False, config_override=()):
+def main(project_location, *args, **kwargs):
+    print(project_location, args, kwargs)
+#def main(project_location, page=None, site=None, serve=False, port=9000, uncompressed=False, config_override=()):
     config_overrides = {}
-    if config_override:
-        config_overrides = dict(arg.split("=") for arg in config_override)
+    if kwargs['config_override']:
+        config_overrides = dict(arg.split("=") for arg in kwargs['config_override'])
+
+    page = kwargs['page']
+    site = kwargs['site']
 
     if page is None and site is None:
         if os.path.exists(project_location):
             sites = ConfigLoader().load(click.format_filename(project_location), config_overrides)
-            main_processor(sites, serve, not uncompressed, port)
+            main_processor(sites, kwargs['serve'], not kwargs['uncompressed'], kwargs['port'])
     elif page is not None:
         create_new_page(page)
     elif site is not None:
@@ -86,8 +91,6 @@ def create_new_site(site, project_location):
 
         with open(os.path.join(project_location, "resources/css/style.less"), "w") as less_file:
             less_file.write(builder_components.STYLE_LESS)
-
-
 
     else:
         click.echo("A site.json file already exists in this folder")

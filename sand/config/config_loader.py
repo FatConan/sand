@@ -23,6 +23,7 @@ class ConfigLoader(object):
                 site_data["overrides"] = config_overrides
                 site_data["plugins"] = site_data.get("plugins", [])
                 os.path.join(path, site_data.get("root"))
+                #Initialise Sites
                 configs.append(Site(path, site_data))
         except KeyError:
             pass
