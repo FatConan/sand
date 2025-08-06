@@ -19,7 +19,7 @@ class BoxBlockProcessor(BlockProcessor):
 
     def __init__(self, parser: BlockParser, config_options):
         if "types" in config_options:
-            self.KNOWN_TYPES = self.KNOWN_TYPES.update(config_options.get("types", {}))
+            self.KNOWN_TYPES |= config_options.get("types", {})
 
         self.open_tag = self.RE_DEFAULT_OPEN
         self.close_tag = self.RE_DEFAULT_CLOSE
@@ -29,13 +29,13 @@ class BoxBlockProcessor(BlockProcessor):
             self.open_tag = tags.get("open", self.RE_DEFAULT_OPEN)
             self.close_tag = tags.get("close", self.RE_DEFAULT_CLOSE)
 
+        self.debug = config_options.get("debug", False)
+
         self.RE_FENCE_START = self.RE_FENCE_START_TEMPLATE % self.open_tag
         self.RE_FENCE_END = self.RE_FENCE_END_TEMPLATE % self.close_tag
 
-        print(self.RE_FENCE_START, self.RE_FENCE_END)
-
-        self.closing_tags = []
-        self.levels = []
+        self.depth = 0
+        self.element_tree = []
         self.completed = False
 
         super().__init__(parser)
@@ -66,28 +66,23 @@ class BoxBlockProcessor(BlockProcessor):
     def open_block(self, parent, block, start_match):
         groups = start_match.groupdict()
         new_element = self.render(parent, groups)
-        self.closing_tags.append(groups.get("start"))
-        self.levels.append(new_element)
+        self.depth += 1
+        self.element_tree.append(new_element)
 
         active_block = re.sub(self.RE_FENCE_START, '', block)
         if active_block:
             self.parser.parseBlocks(new_element, [active_block])
-
         return new_element
 
-    def close_block(self, parent, block, end_match):
-        groups = end_match.groupdict()
-        end_group = groups.get("end")
+    def close_block(self, parent):
         restored_element = parent
 
-        if self.closing_tags:
-            self.closing_tags = self.closing_tags[:-1]
-            self.levels = self.levels[:-1]
+        if self.depth:
+            self.depth -= 1
+            self.element_tree = self.element_tree[:-1]
 
-            if self.levels:
-                restored_element = self.levels[-1]
-
-        block = ""
+            if self.element_tree:
+                restored_element = self.element_tree[-1]
         return restored_element
 
     def process(self, parent, blocks):
@@ -103,22 +98,25 @@ class BoxBlockProcessor(BlockProcessor):
                 if continued:
                     self.parser.parseBlocks(parent, continued)
                     continued = []
-                print("Start an element", counter, start[1].groupdict().get("type"))
+                if self.debug:
+                    print("Start an element", counter, start[1].groupdict().get("type"))
                 parent = self.open_block(parent, block, start[1])
 
             elif end[0]:
-                print("end an element", counter)
+                if self.debug:
+                    print("end an element", counter)
                 if continued:
                     self.parser.parseBlocks(parent, continued)
                     continued = []
 
-                parent = self.close_block(parent, block, end[1])
+                parent = self.close_block(parent)
                 blocks[block_num] = re.sub(self.RE_FENCE_END, '', block)
 
-                if not self.closing_tags:
+                if not self.depth:
                     break
             else:
-                print("Continue", counter)
+                if self.debug:
+                    print("Continue", counter)
                 continued.append(block)
 
         for i in range(0, counter):
