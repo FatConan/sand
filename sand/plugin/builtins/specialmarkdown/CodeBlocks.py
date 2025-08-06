@@ -132,7 +132,6 @@ class BoxExtension(Extension):
     def __init__(self, config_options):
         super().__init__()
         self.config_options = config_options
-        print(self.config_options)
 
     def extendMarkdown(self, md):
         md.parser.blockprocessors.register(BoxBlockProcessor(md.parser, self.config_options), 'box', 175)
