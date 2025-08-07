@@ -1,0 +1,24 @@
+<!DOCTYPE html><html> <head><meta charset="UTF-8"><title>Sand Cheat Sheet</title><link rel="stylesheet" href="/resources/css/root.css"><script type="importmap">{"imports": {"jquery": "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js", "underscore": "https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-esm.min.js"}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js" type="module"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-esm.min.js" type="module"></script><script src="/resources/script/PageNav.js" type="module" defer="defer"></script></head> <body> <div class="container-no-nav"> <button id="returnToTop" title="Go to top">Top</button> <div id="wrapper"> <h1 id="sand-cheat-sheet">Sand Cheat Sheet</h1> <p>Coming soon.</p> <footer> <p>Theme based on Minist by Miguel Bartelsman</p> </footer> </div> </div> <script type="module">
+            import "jquery";
+            const $returnToTop = $("#returnToTop");
+            
+                window.test = "This is a test";
+            
+            window.onscroll = function(){
+                scrollFunction();
+            };
+            function scrollFunction(){
+                if(document.body.scrollTop > 20 || document.documentElement.scrollTop > 20){
+                    $returnToTop.css("display", "block");
+                }else{
+                    $returnToTop.css("display", "none");
+                }
+            }
+
+            // When the user clicks on the button, scroll to the top of the document
+            function topFunction(){
+                document.body.scrollTop = 0;
+                document.documentElement.scrollTop = 0;
+            }
+            $returnToTop.on("click", topFunction);
+        </script> </body> </html>

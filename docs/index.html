@@ -1,0 +1,182 @@
+<!DOCTYPE html><html> <head><meta charset="UTF-8"><title>Sand Documentation</title><link rel="stylesheet" href="/resources/css/root.css"><script type="importmap">{"imports": {"jquery": "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js", "underscore": "https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-esm.min.js"}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js" type="module"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-esm.min.js" type="module"></script><script src="/resources/script/PageNav.js" type="module" defer="defer"></script></head> <body> <div class="container-no-nav"> <button id="returnToTop" title="Go to top">Top</button> <header> <nav> <a id="navigator" href="#">Navigation</a> <div id="navigator-menu-container" class="main-navigation inactive"></div> </nav> <p>Looking for a quick reference? Try the <a href="/cheat-sheet.html">Sand Cheat Sheet</a></p> </header> <div id="wrapper"> <h1 id="sand-a-simple-static-site-generator">Sand: A simple static site generator</h1> <p><strong>Sand</strong> is a static site generator based heavily on an early version of <a href="https://github.com/neuralsandwich/stone">Stone</a> by <a href="https://github.com/neuralsandwich">NeuralSandwich</a>. While <strong>Stone</strong> is becoming a more fully featured blog engine, <strong>Sand</strong> pairs back functionality to the basics, and is designed to provide similar functionality to the early versions of Stone, but with added wildcard support, support for resources, and some other functions that proved useful when building projects.</p> <h2 id="built-on-sand">Built on Sand</h2> <p>This <strong>README</strong> serves as both documentation for this tool as well as an example project. While this file contains the content, there are a number of pieces of additional metadata required to configure the <strong>Sand</strong> project, which are provided by the accompanying <code>site.conf</code> HOCON file.</p> <h3 id="installing-with-pip">Installing with Pip</h3> <p>To install <code>sand</code> as a module run <code>pip install .</code> from within the cloned folder. Once installed <code>sand</code> can be used by running:</p> <pre><code>sand
+</code></pre> <h3 id="generating-the-documentation">Generating the documentation</h3> <p>To see <strong>Sand</strong> generate this documentation, clone this repository and run:</p> <pre><code>python3 sand example --serve
+</code></pre> <p>Or</p> <pre><code>sand example --serve
+</code></pre> <p>from within the checked out folder. This will build this documentation and start a development server at <a href="http://localhost:9000">http://localhost:9000</a> serving it. Omitting the <code>--serve</code> argument will build this documentation without starting a server. </p> <pre><code>sand example
+</code></pre> <h2 id="a-note-on-security">A Note on Security</h2> <p>The <a href="#plugin">plugin</a> aspects of <strong>Sand</strong> are designed to make it flexible enough to accommodate a range of different project types (<strong>Sand</strong> has been used to generate a number of things from blogs, to portfolios, to documentation sites like this one), however, this also provides an avenue for potentially malicious code to be executed by <strong>Sand</strong>. </p> <p>For example, if you run <strong>Sand</strong> periodically on an accessible server and an attacker were able to compromise a <code>sand/plugin.py</code> file to modify any of the expected plugin methods (<code>configure</code>, <code>parse</code>, <code>add_render_context</code>) to do something malicious then <strong>Sand</strong> would execute them.</p> <p>This hasn't been a major concern in its design as <strong>Sand</strong> is meant to generate static sites and so it's presumed that whatever safe environment <strong>Sand</strong> was executed within would be separate to the potentially exposed environment in which its output would be deployed.</p> <p>Still it's worth noting this potential vector as this plugins folder would be something that would be expected to exist outside the core <strong>Sand</strong> code where it might be inadvertently unprotected.</p> <h2 id="configuration">Configuration</h2> <p>A configuration file is required to inform <strong>Sand</strong> what to build and how to build it. It takes the form of a HOCON file typically named <code>site.conf</code> to detail where source and output files can be found, what plugins are required and a collection of other data required when creating the HTML output. Per-page configuration may be specified using a YAML header in the markdown, or by specifying a per-page <code>config</code> entry within the <code>site.conf</code> file.</p> <p>In this overview of how the configuration works we'll walk through the <code>site.conf</code> file in the <code>example</code> folder that describes how this documentation is built. </p> <p><strong>NB:</strong> In previous versions of <strong>Sand</strong> the configuration had been read only as JSON, but now is read as HOCON using <a href="https://github.com/chimpler/pyhocon/">pyhocon</a>. This preserves backwards compatibility, but also allows for the configuration bells and whistles that <a href="https://github.com/lightbend/config/blob/master/HOCON.md">HOCON</a> supports. To make this a little less jarring <strong>Sand</strong> will now also attempt to read configuration data from <code>site.hocon</code> and <code>site.conf</code> in addition to <code>site.json</code> to ease any nomenclature-based anxiety.</p> <p>When the above <code>python3 sand.py example</code> command is run the <code>site.conf</code> in the <code>example</code> folder informs <strong>Sand</strong> how to build the HTML output, and <strong>Sand</strong> follows these instructions to create a styled, HTML version of this README markdown (additionally it creates a configuration cheat sheet from the <code>supplementary-docs\sand-cheat-sheet.md</code> file).</p> <p>If you open the <a href="https://github.com/FatConan/sand/blob/master/example/site.conf">site.conf</a> file you'll see a configuration file that describes how to build the example.</p> <h3 id="siteconf">site.conf</h3> <p>The top level map of the <code>site.conf</code> file contains the "sites" array. This is a list of sites that will be built by this particular file. Each site is represented as a map containing some or all of these keys (there may be additional keys depending on the plugins being used, but these are the keys providing the base functionality): <code>root</code>, <code>output_root</code>, <code>plugins</code>, <code>templates</code>, <code>pages</code> and <code>resources</code>.</p> <p>In the case of the example <code>site.conf</code> file we see the following keys:</p> <ul> <li>"root"</li> <li>"domain"</li> <li>"plugins"</li> <li>"es6css"</li> <li>"pages" </li> <li>"templates"</li> <li>"resources"</li> </ul> <h4 id="root">root</h4> <p><code>root</code> defines the working directory of this particular site relative to the folder provided to the python command. Any <code>source</code> folders will be defined relative to the <code>root</code>.</p> <p>In this case our configuration states <code>"root": "."</code> so the working directory of this site is the <code>example</code> folder.</p> <h4 id="output_root">output_root</h4> <p><code>output_root</code> defines the output directory relative to the folder provided to the python command. Any <code>target</code> folders defined will be relative to the <code>output_root</code>. </p> <p>We don't specify a value in the example <code>site.conf</code> file, so it takes the default value of <code>"./output"</code> (so <code>example/output</code> in this particular case).</p> <h4 id="templates">templates</h4> <p><code>templates</code> defines a list of folders relative to <code>root</code> where our jinja2 templates can be found. We'll reference these by name in our page configuration when we define our pages. </p> <p>In this case we list a single templates folder <code>"templates": ["templates"],</code> and this is again relative to our <code>root</code> so that it can be found at <code>example/templates</code> in this instance. If you inspect this <a href="https://github.com/FatConan/sand/tree/master/example/templates">templates folder</a> you'll find a single jinja2 template named <a href="https://github.com/FatConan/sand/blob/master/example/templates/default.html">default.html</a></p> <h4 id="pages">pages</h4> <p><code>pages</code> defines a list of markdown "pages" to be rendered as HTML output. Each page consists of a map that contains at the very least a <code>source</code> (relative to <code>root</code>) and <code>target</code> (relative to <code>output_root</code>) key, and optionally a <code>config</code> key that can be used provide additional metadata about the page to be generated. This is an alternative (and less intrusive) way of adding metadata to the markdown pages beyond including YAML definitions at the top of the document. More about this can be found in the <strong>pages</strong> section below. </p> <p>In our example the <code>pages</code> entry looks like this:</p> <pre><code>"pages": [
+    {
+        "config": {
+            "title": "Sand Documentation",
+            "template": "default.html",
+            "is_index": true,
+            "rss": true,
+            "created": "2023-07-16 18:12:00",
+        },
+        "source": "../README.md",
+        "target": "./index.html"
+    },
+    {
+        "config": {
+            "title": "Sand Cheat Sheet",
+            "template": "default.html",
+            "rss": true,
+            "created": "2023-07-16 18:12:00",
+        },
+        "source": "../supplementary-docs/sand-cheat-sheet.md",
+        "target": "./cheat-sheet.html"
+    }
+]
+</code></pre> <p>This defines two pages, one processing the <code>README.md</code> file and the other the <code>supplementary-docs/sand-cheat-sheet.md</code> file. In both cases we also tell the renderer to use the <code>default.html</code> template from the template folder defined earlier. Additionally, we provide a page title for each page and add an <code>is_index</code> flag to the main README (both of which become accessible through the DATA object at render time, more about this in the <strong>pages</strong> &amp; <strong>templates</strong> sections). We also specify an <code>rss</code> flag to enable the page to be processed by the built-in rss plugin. More about plugins can be found in the plugin section.</p> <h4 id="resources">resources</h4> <p><code>resources</code> defines a list of supporting files that may be static or may require some alternative processing to the markdown processing <strong>Sand</strong> provides for content. Typically, these files include things like Javascript, images, media and css. In the case of the latter on of the alternative processors provided by <strong>Sand</strong> is the compilation of <code>less</code> files into <code>css</code> (using <a href="https://github.com/lesscpy/lesscpy">lesscpy</a>). </p> <p>The default handling of a resource file is simply to copy it from the source location to the target location.</p> <h4 id="plugins">plugins</h4> <p><code>plugins</code> defines a list of plugins (either built-in, or project-specific) that can be used to augment the functionality of <strong>Sand</strong>. More on this in the <a href="#plugins">plugins</a> section.</p> <h2 id="usage">Usage</h2> <p>To get started with <strong>Sand</strong>:</p> <pre><code># Create project layout
+sand &lt;project_folder&gt; --site &lt;project_name&gt;
+# Generate site
+sand &lt;project_folder&gt;
+# Add a new page to an existing project
+sand &lt;project_folder&gt; --page &lt;page_name&gt;
+</code></pre> <h3 id="folder-structure">Folder Structure</h3> <p>The structure of a project is pretty flexible and can be expanded and contracted by updating the <code>site.json</code> metadata, however, a common example structure (and that created by the built in site generator) is:</p> <pre><code>.
+├── sandplugins (optional)
+|   └── plugin.py (defines a plugin class)
+├── pages
+│   └── ... (.md files)
+├── resources
+│   ├── css
+│   │   └── ... (styles)
+│   ├── script
+│   │   └── ... (javascript)
+│   └── img
+│       └── ... (images)
+├── site.conf
+└── templates
+    └── ... (jinja templates)
+</code></pre> <p><code>site.conf</code> is pretty flexible about the location of templates and files. As such you're not constrained to any particular layout for your site. You could have separate template folders inside each site or have one giant mess in your project root.</p> <p>As a demonstration, if you look at the <code>site.conf</code> for this example you'll see that the README.md file is being included from outside the project root folder while the templates are stored within it.</p> <h2 id="pages_1">Pages</h2> <p>Pages are Markdown files with some optional YAML metadata that define the content of a page and describe the attributes of the generated page including the page title and the template it uses. For example:</p> <pre><code>template: base.html
+title: Hello, World
+
+# This is a header
+
+Here is some content.
+</code></pre> <p>Additionally, metadata can be provided within the <code>site.conf</code> at the point the page is defined (as seen in the example project above). This has the benefit of removing the need to "tarnish" the Markdown with a YAML header, but the drawback that it may not be effectively used when <strong>wildcarding</strong> pages.</p> <p>In either case, Sand makes the metadata defined available to the page when rendered as a dictionary named DATA. In the example above the title can be accessed within the template as:</p> <pre><code>{{ DATA.get(&quot;title&quot;) }}
+</code></pre> <h3 id="using-wildcards-in-page-definitions">Using wildcards in page definitions</h3> <p>Individually identifying pages can be a chore, especially if we wish them to be rendered with a common set of metadata (or their metadata is provided with a YAML header). In these cases we can use wildcards to indicate "all the matching files". A wildcard is denoted using <code>*</code> and is used in both the <code>source</code> and <code>target</code> of a page entry.</p> <p>Wildcards can be very useful when you wish to process a whole folder of Markdown files:</p> <pre><code>"pages": [
+    {
+        "source": "blog/*.md",
+        "target": "blog/*.html"
+    }
+]
+</code></pre> <p>The above directive will take all the .md files in the blog folder, and render them out to a folder of the same name in the output root. All the files will be read as <code>[name].md</code> and output as the corresponding <code>[name].html</code> file. You can also specify a <code>config</code> map at this point, but it'll apply equally to all the files, which can be useful for defining a template, but not for page specific information such as page titles.</p> <h2 id="templates_1">Templates</h2> <p>Templates are HTML pages with <strong><a href="http://jinja.pocoo.org">jinja2</a></strong> markup. An example of the file that Sand produces when using the site generator is shown below. </p> <p><code>base.html</code>:</p> <pre><code>&lt;html&gt;
+  &lt;head&gt;
+    {% block head %}
+    &lt;title&gt;{{ DATA.get("title") }}&lt;/title&gt;
+    {% endblock %}
+  &lt;head&gt;
+  &lt;body&gt;
+  {% block body %}
+    &lt;h1&gt;{{ DATA.get("title") }}&lt;/title&gt;
+    &lt;div id="post"&gt;
+      &lt;!-- Most likely we are going to pass more html here ---&gt;
+      {{ content|safe }}
+    &lt;/div&gt;
+  {% endblock %}
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre> <p>The important points here are that the HTML representation of the Markdown content which is provided through the <code>{{ content }}</code> variable (and in the template above passed through <code>safe</code> to avoid it being escaped), the page level metadata in <code>{{ DATA }}</code>, and the site level metadata in <code>{{ GLOBALS }}</code>. More about <code>GLOBALS</code> can be found in the <strong>advanced usage</strong>. </p> <h2 id="generating">Generating</h2> <p>To generate a particular site invoke <code>sand</code> with the location of the project's root folder.</p> <pre><code>sand &lt;project_folder&gt;
+</code></pre> <h2 id="example">Example</h2> <p>An example project that generates an html version of this README can be found in the example folder.</p> <p>You can build it by running:</p> <pre><code>sand example
+</code></pre> <h2 id="advanced-usage">Advanced Usage</h2> <h3 id="content-jinja-pass">Content Jinja Pass</h3> <p><strong>Sand</strong> allows a Jinja pass to be performed on the markdown allowing you to (carefully) mix your markdown content with Jinja directives. When activated, the markdown content will receive a secondary Jinja rendering pass in which any Jinja directives will be processed. When processed they will be provided access to all the same <code>DATA</code> and <code>GLOBALS</code> values as all the other Jinja rendering phase.</p> <p>This feature can be enabled by including:</p> <pre><code>jinja_pass: True
+</code></pre> <p>either as part of your YAML header, or within a <code>config</code> section of the <code>pages</code> definition in your <code>site.conf</code> for any required pages.</p> <h3 id="globals">GLOBALS</h3> <p>As mentioned previously a dictionary of the data passed from the page metadata into the content/template of each page may be accessed through the <code>DATA</code> object. In addition to this, every rendering phase is also provided access to a <code>GLOBALS</code> object that contains data regarding the project as a whole.</p> <p>The <code>GLOBALS</code> currently is a dictionary with three elements: </p> <ul> <li><code>site_root</code>: the root folder of the project</li> <li><code>output_root</code>: the output folder of the project</li> <li><code>site</code>: the site object as defined in the <code>site.py</code> file that contains the page_reference which is a path-indexed dictionary of all the project's pages and metadata.</li> </ul> <h3 id="plugins_1">Plugins</h3> <p>A site is represented by an instance of the <a href="https://github.com/FatConan/sand/blob/master/config/site.py">Site class</a>. When the site is instantiated it will read a list of plugin names from the <code>site.conf</code>. It will then attempt to instantiate the plugins by loading a module named <code>&lt;plugin-name&gt;.py</code> first from the project's <code>sandplugins</code> folder, then from <strong>Sand's</strong> own <code>plugin\builtins</code> folder. Should the module load. the plugin will be instantiated by calling <code>Plugin()</code> from the loaded module. </p> <p>In this example's <code>site.conf</code> we list three plugins:</p> <pre><code>"plugins": [
+    "es6css",
+    "rss",
+    "example"
+]
+</code></pre> <p>This loads two built-in plugins (<code>es6css</code> and <code>rss</code>) from the <code>plugin\builtins</code> folder and a third plugin (<code>example</code>) from the <code>example\sandplugins\</code> folder.</p> <p>A plugin is defined as a class named <code>Plugin</code> requiring the following methods:</p> <pre><code>class Plugin:
+    def configure(self, site_data, site):
+        pass
+
+    def parse(self, site_data, site):
+        pass
+
+    def add_render_context(self, page, environment, data):
+        pass
+</code></pre> <p>With <code>sand</code> installed using pip, you can optionally base your Plugin class on the <code>SandPlugin</code> class like so:</p> <pre><code>from sand.plugin import SandPlugin
+
+class Plugin(SandPlugin):
+    pass
+</code></pre> <p>Which will provide all the stubs for you allowing you to only override those methods you require.</p> <p>You can create a plugin named <code>&lt;name&gt;</code> by creating a class named <code>Plugin</code> in a <code>&lt;name&gt;.py</code> file within a folder named <code>sand</code> under your project root. Your plugin will have the ability to hook into the <strong>Sand</strong> process at both the stage at which the site structure is being constructed, and at the point the content is rendered. This can be done by modifying the <code>parse</code> and <code>add_render_context</code> methods. </p> <pre><code>.
+├── sandplugins
+│   └── &lt;plugin&gt;.py
+└── site.conf
+</code></pre> <p>By way of example, if we add a list of terms to pages as "tags" in their metadata:</p> <pre><code>"pages": [
+    {
+        "config": {
+            "title": "Sand Documentation",
+            "template": "default.html",
+            "is_index": true,
+            "rss": true,
+            "created": "2023-07-16 18:12:00"
+            "tags": ["guide"]
+        },
+        "source": "./README.md",
+        "target": "./index.html"
+    },
+    {
+        "config": {
+            "title": "Sand Cheat Sheet",
+            "template": "default.html",
+            "rss": true,
+            "created": "2023-07-16 18:12:00"
+            "tags": ["guide", "cheat sheet"]
+        },
+        "source": "../supplementary-docs/sand-cheat-sheet.md",
+        "target": "./cheat-sheet.html"
+    }
+]
+</code></pre> <p>We can then create a new <code>Plugin</code> class that will allow us to fetch the pages by their tag like so:</p> <pre><code>from sand.plugin import SandPlugin
+
+
+class Tags:
+    def __init__(self, pages):
+        self.pages = pages
+
+     def by_tag(self, tag):
+               return [p for p in self.pages if tag in p.data("tags", [])]
+
+
+class Plugin(SandPlugin):
+    def __init__(self):
+        self.tags = None
+
+    def configure(self, site_data, site):
+        self.tags = Tags(site.pages)
+
+    def add_render_context(self, page, environment, data):
+        data["TAGS"] = self.tags
+</code></pre> <p>If we save this plugin as <code>tags.py</code> in our project's <code>sand</code> folder then we'll be able to include it by adding <code>"tags"</code> to the list of plugins in our <code>site.conf</code> file. The <code>add_render_context</code> call will add a variable to our jinja environment names <code>TAGS</code> that allows us to access the <code>by_tag</code> method from within our templates or our <code>jinja_pass</code> enabled markdown like:</p> <pre><code>{% for page in TAGS.by_tag("guide") %}
+    {{ page.data("title") }}
+{% endfor %}
+</code></pre> <p>We could further augment the Tags class to provide the data for creating a tag cloud or any other function we would like.</p> <p>The <code>add_render_context</code> method also allows you to augment the <code>jinja2</code> environment object (as passed as an argument to it) so that you can extend the templating functionality for a project. The plugin in <code>example.py</code> of this documentation's project adds a filter named <code>nl2br</code> that replaces new lines with html breaks. </p> <pre><code>class Plugin(SandPlugin):
+    @staticmethod
+    def nl2br(value):
+        return value.replace("\n", "&lt;br /&gt;")
+
+    def add_render_context(self, page, environment, data):
+        environment.filters["nl2br"] = self.nl2br
+</code></pre> <p>This can then be accessed within a template by piping content through the newly defined filter:</p> <pre><code>{{ content|nl2br|safe }}
+</code></pre> <footer> <p>Theme based on Minist by Miguel Bartelsman</p> </footer> </div> </div> <script type="module">
+            import "jquery";
+            const $returnToTop = $("#returnToTop");
+            
+                window.test = "This is a test";
+            
+            window.onscroll = function(){
+                scrollFunction();
+            };
+            function scrollFunction(){
+                if(document.body.scrollTop > 20 || document.documentElement.scrollTop > 20){
+                    $returnToTop.css("display", "block");
+                }else{
+                    $returnToTop.css("display", "none");
+                }
+            }
+
+            // When the user clicks on the button, scroll to the top of the document
+            function topFunction(){
+                document.body.scrollTop = 0;
+                document.documentElement.scrollTop = 0;
+            }
+            $returnToTop.on("click", topFunction);
+        </script> </body> </html>
