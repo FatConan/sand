@@ -14,7 +14,7 @@
                     <a id="navigator" href="#">Navigation</a>
                     <div id="navigator-menu-container" class="main-navigation inactive"></div>
                 </nav>
-                <p>Looking for a quick reference? Try the <a href="/cheat-sheet.html">Sand Cheat Sheet</a></p>
+                <p>Looking for a quick reference? Try the <a href="{{  GLOBALS.get("base_url") }}cheat-sheet.html">Sand Cheat Sheet</a></p>
             </header>{% endif %}
             <div id="wrapper">
                 {% block content %}{{ content|safe }}{% endblock %}

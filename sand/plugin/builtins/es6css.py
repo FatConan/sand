@@ -60,7 +60,7 @@ class JavaScriptExtensions:
         self.CSSs.append(self.rebased_url(url))
 
     def add_script(self, src="",  _async="", crossorigin="",  defer="defer", integrity="",  nomodule="", referrerpolicy="", data=None):
-        self.scripts.append(self.script_details(self.base_url + src, "module", _async, crossorigin, defer, integrity, nomodule, referrerpolicy))
+        self.scripts.append(self.script_details(src, "module", _async, crossorigin, defer, integrity, nomodule, referrerpolicy))
 
     def tag(self, details_dict):
         return self.base_tag.format(extras=" ".join(['%s="%s"' % (key, value) for key, value in details_dict.items() if value]), content="")
