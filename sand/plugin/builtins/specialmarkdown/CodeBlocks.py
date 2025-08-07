@@ -5,9 +5,9 @@ from markdown.blockprocessors import BlockProcessor
 from markdown.blockparser import BlockParser
 
 class BoxBlockProcessor(BlockProcessor):
-    RE_DEFAULT_OPEN = "{%"
+    RE_DEFAULT_OPEN = "{% "
     RE_DEFAULT_CLOSE = "%}"
-    RE_FENCE_START_TEMPLATE = r'^\s*(?P<start>%s )(?P<type>[^\. \n]+)[^\. \n]*(?P<class_names>\.{0,1}[^\n]*)'
+    RE_FENCE_START_TEMPLATE = r'^\s*(?P<start>%s)(?P<type>[^\. \n]+)[^\. \n]*(?P<class_names>\.{0,1}[^\n]*)'
     RE_FENCE_END_TEMPLATE = r'[\n\s]*(?P<end>%s)[\n\s]*$'
 
     KNOWN_TYPES = {
