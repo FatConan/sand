@@ -47,7 +47,10 @@ class Site(object):
         else:
             self.output_root = os.path.join(self.root, "output")
 
-        self.base_url = site_data.get("domain", "")
+        base_url = site_data.get("domain", "")
+        if base_url and not base_url.endswith("/"):
+            base_url = base_url + "/"
+        self.base_url = base_url
 
         self.uuid = uuid.uuid4()
         self.site_data = site_data

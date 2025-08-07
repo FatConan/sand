@@ -36,7 +36,7 @@ class Plugin(SandPlugin):
 
     def parse(self, site_data, site):
         rss_config = site_data.get("rss", {})
-        base_url = site_data.get("domain", "")
+        base_url = site.base_url
         if base_url[len(base_url) - 1] == "/":
             base_url = base_url[:-1]
         pages = self.process_pages(site.page_reference)
