@@ -4,21 +4,24 @@
             
                 window.test = "This is a test";
             
-            window.onscroll = function(){
+
+            window.onscroll = () => {
                 scrollFunction();
             };
-            function scrollFunction(){
+
+            const scrollFunction = () => {
                 if(document.body.scrollTop > 20 || document.documentElement.scrollTop > 20){
                     $returnToTop.css("display", "block");
                 }else{
                     $returnToTop.css("display", "none");
                 }
-            }
+            };
 
             // When the user clicks on the button, scroll to the top of the document
-            function topFunction(){
+            const topFunction = () => {
                 document.body.scrollTop = 0;
                 document.documentElement.scrollTop = 0;
-            }
+            };
+
             $returnToTop.on("click", topFunction);
         </script> </body> </html>
