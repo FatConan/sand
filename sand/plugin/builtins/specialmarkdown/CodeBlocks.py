@@ -11,10 +11,10 @@ class BoxBlockProcessor(BlockProcessor):
     RE_FENCE_END_TEMPLATE = r'[\n\s]*(?P<end>%s)[\n\s]*$'
 
     KNOWN_TYPES = {
-        "as": "aside",
-        "ar": "article",
-        "d": "div",
-        "s": "section"
+        "as": ("aside", ""),
+        "ar": ("article", ""),
+        "d": ("div", ""),
+        "s": ("section", "")
     }
 
     def __init__(self, parser: BlockParser, config_options):
@@ -44,10 +44,11 @@ class BoxBlockProcessor(BlockProcessor):
         return self.is_start(block)[0]
 
     def render_element(self, parent, box_type, class_names):
-        element = self.KNOWN_TYPES.get(box_type, "div")
-        e = ET.SubElement(parent, element)
-        if class_names:
-            e.set('class', class_names)
+        element = self.KNOWN_TYPES.get(box_type, ("div", ""))
+        e = ET.SubElement(parent, element[0])
+        classes = "%s %s" % (element[1], class_names)
+        if classes:
+            e.set('class', classes)
         return e
 
     def render(self, parent, groups):
