@@ -38,7 +38,7 @@ class JavaScriptExtensions:
         return details
 
     def rebased_url(self, url):
-        url = url.trim()
+        url = url.strip()
 
         #if there's nothing to prepend, just return the original
         if not self.base_url:
