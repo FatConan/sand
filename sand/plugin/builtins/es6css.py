@@ -5,7 +5,8 @@ from sand.plugin import SandPlugin
 SCRIPT_ATTRS = ["alias", "src",  "async", "crossorigin",  "defer", "integrity",  "nomodule", "referrerpolicy", "data"]
 
 class JavaScriptExtensions:
-    def __init__(self):
+    def __init__(self, base_url):
+        self.base_url = base_url
         self.CDNs = {}
         self.CDN_details = {}
         self.CSSs = []
@@ -15,6 +16,7 @@ class JavaScriptExtensions:
         self.base_tag = """<script {extras}>{content}</script>"""
         self.base_importmap = """<script type="importmap">{map}</script>"""
         self.base_style = """<style>{content}</style>"""
+
 
     def script_details(self, src,  _type, _async="", crossorigin="",  defer="", integrity="",  nomodule="", referrerpolicy="", data=None):
         details = {
@@ -39,10 +41,10 @@ class JavaScriptExtensions:
         self.CDNs[alias] = src
 
     def add_css(self, url):
-        self.CSSs.append(url)
+        self.CSSs.append(self.base_url + url)
 
     def add_script(self, src="",  _async="", crossorigin="",  defer="defer", integrity="",  nomodule="", referrerpolicy="", data=None):
-        self.scripts.append(self.script_details(src, "module", _async, crossorigin, defer, integrity, nomodule, referrerpolicy))
+        self.scripts.append(self.script_details(self.base_url + src, "module", _async, crossorigin, defer, integrity, nomodule, referrerpolicy))
 
     def tag(self, details_dict):
         return self.base_tag.format(extras=" ".join(['%s="%s"' % (key, value) for key, value in details_dict.items() if value]), content="")
@@ -88,10 +90,13 @@ class JavaScriptExtensions:
 
 class Plugin(SandPlugin):
     def __init__(self):
-        self.es6css = JavaScriptExtensions()
+        self.es6css = None
 
     def configure(self, site_data, site):
+        base_url = site.base_url
+        self.es6css = JavaScriptExtensions(base_url)
         es6css_config = site_data.get("es6css")
+
         for css in es6css_config.get("CSS", []):
             self.es6css.add_css(css)
 

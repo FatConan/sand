@@ -42,7 +42,8 @@ class Page(RenderEntity):
                 'site_root': self.site.root,
                 'output_root': self.site.output_root,
                 'uuid': self.site.uuid,
-                'overrides': self.site.overrides
+                'overrides': self.site.overrides,
+                'base_url': self.site.base_url
             },
 
             'DATA': self.page_data,

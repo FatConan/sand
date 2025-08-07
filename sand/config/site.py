@@ -47,6 +47,8 @@ class Site(object):
         else:
             self.output_root = os.path.join(self.root, "output")
 
+        self.base_url = site_data.get("domain", "")
+
         self.uuid = uuid.uuid4()
         self.site_data = site_data
 
