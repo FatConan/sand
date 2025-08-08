@@ -11,14 +11,18 @@ class BoxBlockProcessor(BlockProcessor):
     RE_FENCE_END_TEMPLATE = r'[\n\s]*(?P<end>%s)[\n\s]*$'
 
     KNOWN_TYPES = {
-        "as": ("aside", ""),
-        "ar": ("article", ""),
-        "d": ("div", ""),
-        "s": ("section", "")
+        "as": {"tag": "aside", "classes":""},
+        "ar": {"tag": "article", "classes":""},
+        "d":  {"tag": "div", "classes":""},
+        "s":  {"tag": "section", "classes":""},
     }
 
     def __init__(self, parser: BlockParser, config_options):
+        self.debug = config_options.get("debug", False)
+
         if "types" in config_options:
+            if self.debug:
+                print("Introducing new types:", config_options.get("types"))
             self.KNOWN_TYPES |= config_options.get("types", {})
 
         self.open_tag = self.RE_DEFAULT_OPEN
@@ -26,10 +30,12 @@ class BoxBlockProcessor(BlockProcessor):
 
         if "tags" in config_options:
             tags = config_options.get("tags")
+            if self.debug:
+                print("Configuring new tags:", tags)
+
             self.open_tag = tags.get("open", self.RE_DEFAULT_OPEN)
             self.close_tag = tags.get("close", self.RE_DEFAULT_CLOSE)
 
-        self.debug = config_options.get("debug", False)
 
         self.RE_FENCE_START = self.RE_FENCE_START_TEMPLATE % self.open_tag
         self.RE_FENCE_END = self.RE_FENCE_END_TEMPLATE % self.close_tag
@@ -44,9 +50,11 @@ class BoxBlockProcessor(BlockProcessor):
         return self.is_start(block)[0]
 
     def render_element(self, parent, box_type, class_names):
-        element = self.KNOWN_TYPES.get(box_type, ("div", ""))
-        e = ET.SubElement(parent, element[0])
-        classes = "%s %s" % (element[1], class_names)
+        element = self.KNOWN_TYPES.get(box_type, {"tag":"div", "classes":""})
+        if self.debug:
+            print("Selected Element", element)
+        e = ET.SubElement(parent, element.get("tag", "div"))
+        classes = "%s %s" % (element.get("classes", ""), class_names)
         if classes:
             e.set('class', classes)
         return e
