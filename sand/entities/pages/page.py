@@ -3,13 +3,12 @@ import pathlib
 
 from jinja2.exceptions import TemplateNotFound
 
-from sand.entities.render_entity import RenderEntity
+from sand.entities import RenderEntity
 
 
 class Page(RenderEntity):
-    def __init__(self, site, target, source=None, page_type=None, config=None):
-        super().__init__(site, source, target)
-        self.page_type = page_type
+    def __init__(self, site, target, source=None, config=None, **kwargs):
+        super().__init__(site, source, target, **kwargs)
         self.page_data = {}
         #The content as read from the page file
         self.raw_content = None
@@ -48,7 +47,6 @@ class Page(RenderEntity):
 
             'DATA': self.page_data,
 
-            'page_type': self.page_type,
             'source': self.source,
             'target': self.target,
             'source_file': self.source_file,
@@ -74,20 +72,15 @@ class Page(RenderEntity):
 
     def convert_to_template_html(self):
         # First render out the markdown and collection the YAML data
-        if self.page_type == "RAW":
-            # If we indicate that a page is RAW, then the text should pass unfiltered and unchanged into the final
-            # document.
-            self.content = self.raw_content
-        else:
-            self.site.renderer.reset()
-            self.content = self.site.renderer.convert(self.raw_content)
-            local_template_data = {}
-            for key, value in self.site.renderer.Meta.items():
-                if isinstance(value, list) and len(value) == 1:
-                    local_template_data[key] = value[0]
-                else:
-                    local_template_data[key] = value
-            self.page_data.update(local_template_data)
+        self.site.renderer.reset()
+        self.content = self.site.renderer.convert(self.raw_content)
+        local_template_data = {}
+        for key, value in self.site.renderer.Meta.items():
+            if isinstance(value, list) and len(value) == 1:
+                local_template_data[key] = value[0]
+            else:
+                local_template_data[key] = value
+        self.page_data.update(local_template_data)
 
     def render(self, environment, compress=True):
         try:

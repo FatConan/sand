@@ -1,4 +1,4 @@
-from sand.entities.render_entity import RenderEntity
+from sand.entities import RenderEntity
 import shutil
 import os
 
@@ -6,8 +6,8 @@ import os
 # A PlainResource is a file that is copied from one location to another. If the target location already exists
 # then it will delete the target and replace it.
 class PlainResource(RenderEntity):
-    def __init__(self, site, source, target, resource_type=None):
-        super().__init__(site, source, target)
+    def __init__(self, site, source, target, **kwargs):
+        super().__init__(site, source, target, **kwargs)
         self.source_path = os.path.abspath(os.path.join(self.site.root, self.source))
         self.target_path = os.path.abspath(os.path.join(self.site.output_root, self.target))
 

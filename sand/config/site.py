@@ -9,16 +9,38 @@ import markdown
 from jinja2 import environment
 
 from sand.config.default.site_data_processor import Plugin as DefaultPlugin
-from sand.entities.page import Page
+from sand.entities.pages.__init__ import *
+from sand.entities.resources.__init__ import *
+from sand.entities.__init__ import RenderEntity as DefaultRenderEntity
 from sand.helpers.progress import Progress
 
+#Define some string constants
+RESOURCES = "resources"
+PAGES = "pages"
+PLUGINS = "plugins"
+PLUGINS_MODULE = "sandplugins"
 
 class Site(object):
     def __init__(self, root, site_data):
         print("Initialising Site", root)
+
+        # Create a dictionary of available render entity types, we can then expand this in plugins if we like
+        self._render_entities = {
+            RESOURCES: {
+                "less": LessResource,
+                "scss": ScssResource,
+                None: PlainResource,
+            },
+            PAGES: {
+                "raw": RawContent,
+                None: Page
+            }
+        }
+
+        #Create an extensible list of plugins
         self._plugins = [DefaultPlugin(), ]
 
-        external_plugins = site_data.get("plugins", list())
+        external_plugins = site_data.get(PLUGINS, list())
 
         if external_plugins:
             # create a list of plugins
@@ -64,10 +86,24 @@ class Site(object):
     def minify(self, raw_html):
         return self.minifier.minify(raw_html)
 
+    def render_entity_selection(self, entity_domain, entity_dict):
+        domain  = self._render_entities.get(entity_domain, {})
+        requested_type = entity_dict.get("type", None)
+        #Look up the render entity class, or grab the default No-oip if that fails
+        renderer = domain.get(requested_type, DefaultRenderEntity)
+        return renderer(self, **entity_dict)
+
+    def add_resource(self, resource_dict):
+        #Grab the correct resource type and add it to the list
+        resource = self.render_entity_selection(RESOURCES, resource_dict)
+        self.resources.append(resource)
+
     def add_page(self, page_dict):
-        page = Page(self, **page_dict)
+        #Grab the correct page type and add it to the list
+        page = self.render_entity_selection(PAGES, page_dict)
         self.pages.append(page)
 
+        #Also add the page to a reference dict that indexes them by path
         path, file = page.target_url_parts
         try:
             self.page_reference[path].append((file, page))
@@ -82,7 +118,7 @@ class Site(object):
     def load_plugin(self, root, module):
         # Plugins may be loaded from the project or from the builtins. Check the externals first then
         # try the builtins folder
-        PLUGINS_MODULE = "sandplugins"
+
         try:
             root_path = os.path.abspath(root)
             sys.path.append(root_path)

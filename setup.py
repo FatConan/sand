@@ -14,7 +14,7 @@ setup(
     packages=['sand', 'sand.builder', 'sand.config', 'sand.config.default', 'sand.plugin', 'sand.plugin.builtins',
               'sand.plugin.builtins.specialmarkdown',
               'sand.server',
-              'sand.helpers', 'sand.entities', 'sand.entities.resources'],
+              'sand.helpers', 'sand.entities', 'sand.entities.resources', 'sand.entities.pages'],
     url='https://github.com/FatConan/sand',
     license='MIT',
     author='Ian Usher',

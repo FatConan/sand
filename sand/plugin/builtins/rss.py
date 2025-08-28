@@ -9,6 +9,7 @@ from sand.plugin import SandPlugin
 class Plugin(SandPlugin):
     @staticmethod
     def generate_feed(config, pages):
+        print(config)
         feed = rfeed.Feed(
             title=config.get("title", ""),
             link=config.get("link", ""),
@@ -37,8 +38,10 @@ class Plugin(SandPlugin):
     def parse(self, site_data, site):
         rss_config = site_data.get("rss", {})
         base_url = site.base_url
-        if base_url[len(base_url) - 1] == "/":
+        if base_url and base_url[len(base_url) - 1] == "/":
             base_url = base_url[:-1]
+        rss_config["link"] = base_url + "/rss.xml"
+        print(rss_config)
         pages = self.process_pages(site.page_reference)
         pages.sort(key=lambda x: x[1].data("created", "1970-01-01 00:00:00"))
         page_items = []
@@ -58,6 +61,7 @@ class Plugin(SandPlugin):
         page_dict["config"] = {
             "jinja_pass": False,
             "is_index": False,
+            "compress": False,
             "static_content": rss_content
         }
         site.add_page(page_dict)

@@ -6,8 +6,9 @@ from sand.plugin import SandPlugin
 SCRIPT_ATTRS = ["alias", "src",  "async", "crossorigin",  "defer", "integrity",  "nomodule", "referrerpolicy", "data"]
 
 class JavaScriptExtensions:
-    def __init__(self, base_url):
+    def __init__(self, base_url, force_base_url=False):
         self.base_url = base_url
+        self.force_base_url = force_base_url
         self.CDNs = {}
         self.CDN_details = {}
         self.CSSs = []
@@ -46,11 +47,15 @@ class JavaScriptExtensions:
         # if it looks fully qualified, just return it
         elif url.startswith("https://") or url.startswith("http://") or url.startswith("//"):
             return url
-        else:
+        #If we're forcing a base url
+        elif self.force_base_url:
             relative_url = url
             if url.startswith("/"):
                 relative_url = "." + url
             return urljoin(self.base_url, relative_url)
+        else:
+            #Otherwise leave it alone
+            return url
 
     def add_CDN(self, alias="", src="", _async="", crossorigin="",  defer="", integrity="",  nomodule="", referrerpolicy="", data=None):
         self.CDN_details[alias] = self.script_details(src, "module", _async, crossorigin, defer, integrity, nomodule, referrerpolicy)
@@ -109,8 +114,8 @@ class Plugin(SandPlugin):
         self.es6css = None
 
     def configure(self, site_data, site):
-        self.es6css = JavaScriptExtensions(site.base_url)
         es6css_config = site_data.get("es6css")
+        self.es6css = JavaScriptExtensions(site.base_url, es6css_config.get("force_base_url", False))
 
         for css in es6css_config.get("CSS", []):
             self.es6css.add_css(css)

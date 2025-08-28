@@ -2,7 +2,7 @@ import os
 
 
 class RenderEntity(object):
-    def __init__(self, site, source, target):
+    def __init__(self, site, source, target, **kwargs):
         self.site = site
         self.source = source
         self.target = target
@@ -26,5 +26,5 @@ class RenderEntity(object):
     def as_dict(self):
         return {}
 
-    def render(self, environment, compress=True):
-        pass
+    def render(self, environment):
+        print("No-op renderer selected, please check your configuration")

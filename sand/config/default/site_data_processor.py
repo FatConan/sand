@@ -4,7 +4,6 @@ import re
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from sand.entities.resources.resource_selector import ResourceSelector
 from sand.plugin import SandPlugin
 
 
@@ -58,4 +57,5 @@ class Plugin(SandPlugin):
             site.add_page(page_dict)
 
         processed_resources = self.process_wildcards(site_data.get("resources", []), site)
-        site.resources = [ResourceSelector.select(site, **resource) for resource in processed_resources]
+        for resource_dict in processed_resources:
+            site.add_resource(resource_dict)

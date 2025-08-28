@@ -1,11 +1,11 @@
 import os
 import lesscpy
-from sand.entities.render_entity import RenderEntity
+from sand.entities import RenderEntity
 
 
 class LessResource(RenderEntity):
-    def __init__(self, site, source, target):
-        super().__init__(site, source, target)
+    def __init__(self, site, source, target, **kwargs):
+        super().__init__(site, source, target, **kwargs)
         self.source_path = os.path.abspath(os.path.join(self.site.root, self.source))
         self.target_path = os.path.abspath(os.path.join(self.site.output_root, self.target))
 
