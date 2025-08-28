@@ -82,7 +82,7 @@ class Page(RenderEntity):
                 local_template_data[key] = value
         self.page_data.update(local_template_data)
 
-    def render(self, environment, compress=True):
+    def render(self, environment, compress=True, **kwargs):
         try:
             os.makedirs(os.path.split(self.target_path)[0], exist_ok=True)
             with open(self.target_path, "w") as target_file:

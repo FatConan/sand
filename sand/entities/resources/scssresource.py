@@ -9,7 +9,7 @@ class ScssResource(RenderEntity):
         self.source_path = os.path.abspath(os.path.join(self.site.root, self.source))
         self.target_path = os.path.abspath(os.path.join(self.site.output_root, self.target))
 
-    def render(self, environment):
+    def render(self, environment, **kwargs):
         directory = os.path.split(self.target_path)[0]
         os.makedirs(directory, exist_ok=True)
 

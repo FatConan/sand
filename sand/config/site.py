@@ -149,7 +149,7 @@ class Site(object):
 
         for page in self.pages:
             progress.spinner("PAGES %s")
-            page.render(self.environment, compress)
+            page.render(self.environment, compress=compress)
 
         for resource in self.resources:
             progress.spinner("RESOURCES %s")

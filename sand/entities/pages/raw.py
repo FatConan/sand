@@ -27,7 +27,7 @@ class RawContent(RenderEntity):
         else:
             self.raw_content = self.page_data.get("static_content", "")
 
-    def render(self, environment):
+    def render(self, environment, **kwargs):
         print('Rendering raw for (%s)' % self.source_path)
         os.makedirs(os.path.split(self.target_path)[0], exist_ok=True)
         with open(self.target_path, "w") as target_file:
