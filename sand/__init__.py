@@ -19,8 +19,6 @@ def main_processor(sites, serve=False, compress=True, port=9000):
 @click.option("--serve", is_flag=True, help="Run a server serving the generated site")
 @click.option("--port", "-p", type=int, default=9000, multiple=False, help="Starting port for the test server")
 def main(project_location, *args, **kwargs):
-    print(project_location, args, kwargs)
-#def main(project_location, page=None, site=None, serve=False, port=9000, uncompressed=False, config_override=()):
     config_overrides = {}
     if kwargs['config_override']:
         config_overrides = dict(arg.split("=") for arg in kwargs['config_override'])

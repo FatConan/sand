@@ -3,7 +3,7 @@ import os
 import shutil
 import sys
 import uuid
-
+import warnings
 import htmlmin
 import markdown
 from jinja2 import environment
@@ -86,6 +86,19 @@ class Site(object):
     def minify(self, raw_html):
         return self.minifier.minify(raw_html)
 
+    def register_renderer(self, entity_domain, entity_type, renderer_class):
+        domain = self._render_entities.get(entity_domain, {})
+        if entity_type in domain:
+            warnings.warn("WARNING: Replacing existing renderer for %s" % entity_type)
+        domain[entity_type] = renderer_class
+        self._render_entities[entity_domain] = domain
+
+    def register_resource_renderer(self, entity_type, renderer_class):
+        self.register_renderer(RESOURCES, entity_type, renderer_class)
+
+    def register_page_renderer(self, entity_type, renderer_class):
+        self.register_renderer(PAGES, entity_type, renderer_class)
+
     def render_entity_selection(self, entity_domain, entity_dict):
         domain  = self._render_entities.get(entity_domain, {})
         requested_type = entity_dict.get("type", None)
@@ -104,11 +117,14 @@ class Site(object):
         self.pages.append(page)
 
         #Also add the page to a reference dict that indexes them by path
-        path, file = page.target_url_parts
         try:
-            self.page_reference[path].append((file, page))
-        except KeyError:
-            self.page_reference[path] = [(file, page), ]
+            path, file = page.target_url_parts
+            try:
+                self.page_reference[path].append((file, page))
+            except KeyError:
+                self.page_reference[path] = [(file, page), ]
+        except AttributeError:
+            pass
 
         return page
 
@@ -132,7 +148,7 @@ class Site(object):
                 print("Built-in plugin '%s' loaded" % module)
                 return instance
             except ImportError:
-                print("Unable to load plugin '%s'" % module)
+                warnings.warn("Unable to load plugin '%s'" % module)
         return None
 
     def __repr__(self):

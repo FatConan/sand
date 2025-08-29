@@ -8,8 +8,6 @@ import os
 class PlainResource(RenderEntity):
     def __init__(self, site, source, target, **kwargs):
         super().__init__(site, source, target, **kwargs)
-        self.source_path = os.path.abspath(os.path.join(self.site.root, self.source))
-        self.target_path = os.path.abspath(os.path.join(self.site.output_root, self.target))
 
     def render(self, environment, **kwargs):
         directory = os.path.split(self.target_path)[0]

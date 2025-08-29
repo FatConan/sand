@@ -45,18 +45,4 @@ class ConfigLoader(object):
             print("Error: No path to site config")
             exit(1)
 
-        """if not conf:
-            print("Error: No config entries found")
-            exit(1)
-
-        try:
-            for site_data in conf["sites"]:
-                site_data["overrides"] = config_overrides
-                site_data["plugins"] = site_data.get("plugins", [])
-                os.path.join(path, site_data.get("root"))
-                configs.append(Site(path, site_data))
-        except KeyError:
-            pass
-
-        return configs"""
         return self.from_dict(path, conf, config_overrides)

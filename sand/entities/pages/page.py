@@ -1,5 +1,6 @@
 import os
 import pathlib
+import warnings
 
 from jinja2.exceptions import TemplateNotFound
 
@@ -14,16 +15,9 @@ class Page(RenderEntity):
         self.raw_content = None
         self.content = None
 
-
         if config is not None and isinstance(config, dict):
             self.page_data.update(config)
 
-        if self.source is not None:
-            self.source_path = os.path.abspath(os.path.join(self.site.root, self.source))
-        else:
-            self.source_path = None
-
-        self.target_path = os.path.abspath(os.path.join(self.site.output_root, self.target))
         self.target_url = pathlib.PurePosixPath("/", self.target)
         self.target_url_parts = os.path.split(self.target_url)
 
@@ -92,11 +86,13 @@ class Page(RenderEntity):
                     output = self.site.minify(output)
 
                 target_file.write(output)
+
         except TemplateNotFound as tnf:
-            print("Requested template (%s) not found, skipping" % tnf)
+            warnings.warn("Requested template (%s) not found, skipping" % tnf)
+
         except KeyError as ke:
             if str(ke) == '\'template\'':
-                print('Missing template, rendering markdown only for (%s)' % self.source_path)
+                warnings.warn('Missing template, rendering markdown only for (%s)' % self.source_path)
                 os.makedirs(os.path.split(self.target_path)[0], exist_ok=True)
                 with open(self.target_path, "w") as target_file:
                     output = self.to_dict(environment)["content"]

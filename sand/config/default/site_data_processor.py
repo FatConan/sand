@@ -5,11 +5,11 @@ import re
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from sand.plugin import SandPlugin
-
+from sand.helpers.wildcard_processor import process_wildcards as helper_wildcard_processor
 
 class Plugin(SandPlugin):
     def __init__(self):
-        self.wildcard_re = re.compile("([^\*]*)\*(\..+)")
+        self.wildcard_re = re.compile(r"([^\*]*)\*([\.]{0,1}.*)")
 
     def process_wildcards(self, entities, site):
         processed_entities = []
@@ -17,26 +17,17 @@ class Plugin(SandPlugin):
         for entity in entities:
             source = entity.get("source", "")
             target = entity.get("target", "")
-            source_match = self.wildcard_re.match(source)
-            target_match = self.wildcard_re.match(target)
+            replacements = helper_wildcard_processor(source, target, site)
 
-            if source_match and target_match:
-                listed_sources = glob.glob(os.path.abspath(os.path.join(site.root, source)))
-                for list_source in listed_sources:
-                    pre, post = source_match.groups()
-                    filename = os.path.split(list_source)[-1].replace(post, "")
-
-                    replace_target = target.replace("*", filename)
-                    replace_source = source.replace("*", filename)
-
+            for replacement in replacements:
+                if replacement.is_wild():
                     entity_copy = entity.copy()
-                    entity_copy["source"] = replace_source
-                    entity_copy["target"] = replace_target
+                    entity_copy["source"] = replacement.source
+                    entity_copy["target"] = replacement.target
+                    entity_copy["wildcard_filename"] = replacement.wildcard_filename
                     processed_entities.append(entity_copy)
-            elif source_match or target_match:
-                print("Badly formed source and target pairing, %s and %s", (source, target))
-            else:
-                processed_entities.append(entity)
+                else:
+                    processed_entities.append(entity)
         return processed_entities
 
     def parse(self, site_data, site):
