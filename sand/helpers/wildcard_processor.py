@@ -17,8 +17,16 @@ class ProcessedWildcard:
 
 
 def process_wildcards(source, target, site):
-    source_match = WILDCARD_RE.match(source)
-    target_match = WILDCARD_RE.match(target)
+    if source is not None:
+        source_match = WILDCARD_RE.match(source)
+    else:
+        source_match = None
+
+    if target is not None:
+        target_match = WILDCARD_RE.match(target)
+    else:
+        target_match = None
+
     replacements = []
 
     if source_match and target_match:

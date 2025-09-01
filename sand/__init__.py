@@ -2,7 +2,7 @@ import json
 import os
 import click
 
-from sand.config.config_loader import ConfigLoader
+from sand.config import ConfigLoader
 
 def main_processor(sites, serve=False, compress=True, port=9000):
     perform_render(sites, compress)

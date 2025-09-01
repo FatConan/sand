@@ -8,7 +8,7 @@ import htmlmin
 import markdown
 from jinja2 import environment
 
-from sand.config.default.site_data_processor import Plugin as DefaultPlugin
+from sand.config.default.site_data_processor import SiteDataProcessorPlugin as DefaultPlugin
 from sand.entities.pages.__init__ import *
 from sand.entities.resources.__init__ import *
 from sand.entities.__init__ import RenderEntity as DefaultRenderEntity
@@ -61,7 +61,7 @@ class Site(object):
         self.resources = []
         self.overrides = {}
 
-        self.root = os.path.join(root, site_data.get("root"))
+        self.root = os.path.join(root, site_data.get("root", "."))
 
         output_relative = site_data.get("output_root", "output")
         if output_relative:
@@ -160,13 +160,27 @@ class Site(object):
             plugin.parse(data, self)
 
     def render(self, compress=True):
+        """
+        Render the site's pages and resources
+
+        :param compress: Should we compress the output (stripping wasted whitespace etc.)
+        :return:
+        """
+
         shutil.rmtree(os.path.abspath(self.output_root), ignore_errors=True)
         progress = Progress()
 
         for page in self.pages:
             progress.spinner("PAGES %s")
-            page.render(self.environment, compress=compress)
+            if page.validate():
+                page.render(self.environment, compress=compress)
+            else:
+                warnings.warn("Page %s did not pass validation and won't be rendered", page)
 
         for resource in self.resources:
             progress.spinner("RESOURCES %s")
-            resource.render(self.environment)
+            if resource.validate():
+                resource.render(self.environment)
+            else:
+                warnings.warn("Resource %s did not pass validation and won't be rendered", resource)
+
