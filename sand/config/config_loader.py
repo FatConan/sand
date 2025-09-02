@@ -1,4 +1,5 @@
 import os
+import warnings
 from sand.config.site import Site
 from pyhocon import ConfigFactory
 
@@ -8,6 +9,21 @@ class ConfigLoader(object):
 
     def __init__(self):
         pass
+
+    def is_valid_dict(self, conf):
+        """
+        Check that the configuration looks to provide the basics of a site definition
+
+        :param conf: The candidate configuration
+        :return: A boolean indicating validity
+        """
+        if not isinstance(conf, dict):
+            return False
+
+        if not "root" in conf:
+            return False
+
+        return True
 
     def from_individual_dict(self, path, conf=None, config_overrides=None):
         """
@@ -39,14 +55,26 @@ class ConfigLoader(object):
 
         #We need to have a properly formatted list of sites so make sure that's a thing
         try:
-            for site_data in conf["sites"]:
+            for i, site_data in enumerate(conf["sites"]):
                 #And if it is, then instantiate the appropriate site from the site_data
-                configs.append(
-                    self.from_individual_dict(path, site_data, config_overrides)
-                )
+                if self.is_valid_dict(site_data):
+                    configs.append(
+                        self.from_individual_dict(path, site_data, config_overrides)
+                    )
+                else:
+                    warnings.warn("Invalid definition found for site %d" % i)
         except KeyError:
-            print("Error: No site entries found configuration")
-            exit(1)
+            for name, site_data in conf.items():
+                if self.is_valid_dict(site_data):
+                    configs.append(
+                        self.from_individual_dict(path, site_data, config_overrides)
+                    )
+                else:
+                    warnings.warn("Invalid definition found for site \"%s\"" % name)
+
+            if not configs:
+                print("Error: No site entries found configuration")
+                exit(1)
 
         return configs
 
