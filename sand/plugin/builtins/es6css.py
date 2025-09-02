@@ -114,7 +114,7 @@ class Plugin(SandPlugin):
         self.es6css = None
 
     def configure(self, site_data, site):
-        es6css_config = site_data.get("es6css")
+        es6css_config = site_data.get("es6css", {})
         self.es6css = JavaScriptExtensions(site.base_url, es6css_config.get("force_base_url", False))
 
         for css in es6css_config.get("CSS", []):
