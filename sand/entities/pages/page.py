@@ -5,11 +5,12 @@ import warnings
 from jinja2.exceptions import TemplateNotFound
 
 from sand.entities import RenderEntity
+from sand.entities.pages.content_loading_entity import ContentLoadingEntity
 
 
-class Page(RenderEntity):
+class Page(RenderEntity, ContentLoadingEntity):
     def __init__(self, site, target, source=None, config=None, **kwargs):
-        super().__init__(site, source, target, **kwargs)
+        super().__init__(site, target, source, **kwargs)
         self.page_data = {}
         #The content as read from the page file
         self.raw_content = None
@@ -18,13 +19,11 @@ class Page(RenderEntity):
         if config is not None and isinstance(config, dict):
             self.page_data.update(config)
 
-        self.target_url = pathlib.PurePosixPath("/", self.target)
-        self.target_url_parts = os.path.split(self.target_url)
+        target_url_parts = self.target_url_parse(self.target)
+        self.target_url = target_url_parts.target_url
+        self.target_url_parts = target_url_parts.target_url_parts
 
-        if self.source_path is not None:
-            self.raw_content = open(self.source_path, "r").read()
-        else:
-            self.raw_content = self.page_data.get("static_content", "")
+        self.raw_content = self.load_raw_content(self.source_path, self.page_data)
 
         self.convert_to_template_html()
 
@@ -67,7 +66,13 @@ class Page(RenderEntity):
     def convert_to_template_html(self):
         # First render out the markdown and collection the YAML data
         self.site.renderer.reset()
-        self.content = self.site.renderer.convert(self.raw_content)
+
+        #If we have some raw content to pass to the markdown renderer then do it, otherwise the content
+        # will be an empty string
+        self.content = ""
+        if self.raw_content is not None:
+            self.content = self.site.renderer.convert(self.raw_content)
+
         local_template_data = {}
         for key, value in self.site.renderer.Meta.items():
             if isinstance(value, list) and len(value) == 1:

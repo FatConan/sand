@@ -1,11 +1,12 @@
 from sand.entities import RenderEntity
 import os
 import pathlib
+from sand.entities.pages.content_loading_entity import ContentLoadingEntity
 
 
-class RawContent(RenderEntity):
+class RawContent(RenderEntity, ContentLoadingEntity):
     def __init__(self, site, target, source=None, config=None, **kwargs):
-        super().__init__(site, source, target, **kwargs)
+        super().__init__(site, target, source, **kwargs)
         self.page_data = {}
         #The content as read from the page file
         self.raw_content = None
@@ -13,13 +14,11 @@ class RawContent(RenderEntity):
         if config is not None and isinstance(config, dict):
             self.page_data.update(config)
 
-        self.target_url = pathlib.PurePosixPath("/", self.target)
-        self.target_url_parts = os.path.split(self.target_url)
+        target_url_parts = self.target_url_parse(self.target)
+        self.target_url = target_url_parts.target_url
+        self.target_url_parts = target_url_parts.target_url_parts
 
-        if self.source_path is not None:
-            self.raw_content = open(self.source_path, "r").read()
-        else:
-            self.raw_content = self.page_data.get("static_content", "")
+        self.raw_content = self.load_raw_content(self.source_path, self.page_data)
 
     def render(self, environment, **kwargs):
         print('Rendering raw for (%s)' % self.source_path)

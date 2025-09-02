@@ -2,7 +2,10 @@ import os
 import warnings
 
 class RenderEntity(object):
-    def __init__(self, site, source, target, **kwargs):
+    # Originally this was site, source, target, ... which made sense at the time, however it has become
+    # clear that there are frequent use cases where the source may be None, in which case it makes sense
+    # to swap them so that we can override __init__ in subclasses to make source optional
+    def __init__(self, site, target, source, **kwargs):
         self.site = site
         self.source = source
         self.target = target
@@ -52,8 +55,9 @@ class RenderEntity(object):
         if is_output:
             root = self.site.output_root
 
-        if path is not None:
+        if path is not None and path != "":
             return os.path.abspath(os.path.join(root, path))
+
         return None
 
     def render(self, environment, **kwargs):

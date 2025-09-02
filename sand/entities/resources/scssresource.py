@@ -4,8 +4,8 @@ from sand.entities import RenderEntity
 
 
 class ScssResource(RenderEntity):
-    def __init__(self, site, source, target, **kwargs):
-        super().__init__(site, source, target, **kwargs)
+    def __init__(self, site, target, source, **kwargs):
+        super().__init__(site, target, source, **kwargs)
 
     def render(self, environment, **kwargs):
         directory = os.path.split(self.target_path)[0]

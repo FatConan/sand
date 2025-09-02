@@ -6,8 +6,11 @@ import os
 # A PlainResource is a file that is copied from one location to another. If the target location already exists
 # then it will delete the target and replace it.
 class PlainResource(RenderEntity):
-    def __init__(self, site, source, target, **kwargs):
-        super().__init__(site, source, target, **kwargs)
+    def __init__(self, site, target, source, **kwargs):
+        super().__init__(site, target, source, **kwargs)
+
+    def validate(self):
+        return self.source is not None and self.target is not None
 
     def render(self, environment, **kwargs):
         directory = os.path.split(self.target_path)[0]
