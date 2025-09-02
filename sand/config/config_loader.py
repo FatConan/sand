@@ -4,7 +4,7 @@ from sand.config.site import Site
 from pyhocon import ConfigFactory
 
 
-class ConfigLoader(object):
+class ConfigLoader:
     site_config_files = ["site.json", "site.conf"]
 
     def __init__(self):
@@ -25,7 +25,7 @@ class ConfigLoader(object):
 
         return True
 
-    def from_individual_dict(self, path, conf=None, config_overrides=None):
+    def from_individual_dict(self, path, conf=None, config_overrides=None, name=None):
         """
         Create a site instance from the configuration information in the site.conf/site.json file.
 
@@ -41,7 +41,7 @@ class ConfigLoader(object):
         conf["plugins"] = conf.get("plugins", [])
         os.path.join(path, conf.get("root"))
         # Initialise Site
-        return Site(path, conf)
+        return Site(path, conf, name)
 
     def from_dict(self, path, conf=None, config_overrides=None):
         configs = []
@@ -59,7 +59,7 @@ class ConfigLoader(object):
                 #And if it is, then instantiate the appropriate site from the site_data
                 if self.is_valid_dict(site_data):
                     configs.append(
-                        self.from_individual_dict(path, site_data, config_overrides)
+                        self.from_individual_dict(path, site_data, config_overrides, name="Unnamed-%d" % i)
                     )
                 else:
                     warnings.warn("Invalid definition found for site %d" % i)
@@ -67,7 +67,7 @@ class ConfigLoader(object):
             for name, site_data in conf.items():
                 if self.is_valid_dict(site_data):
                     configs.append(
-                        self.from_individual_dict(path, site_data, config_overrides)
+                        self.from_individual_dict(path, site_data, config_overrides, name=name)
                     )
                 else:
                     warnings.warn("Invalid definition found for site \"%s\"" % name)

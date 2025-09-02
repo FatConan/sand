@@ -20,9 +20,12 @@ PAGES = "pages"
 PLUGINS = "plugins"
 PLUGINS_MODULE = "sandplugins"
 
-class Site(object):
-    def __init__(self, root, site_data):
-        print("Initialising Site", root)
+
+class Site:
+    def __init__(self, root, site_data, name=None):
+        print("Initialising Site", name)
+
+        self.name = name
 
         # Create a dictionary of available render entity types, we can then expand this in plugins if we like
         self._render_entities = {
@@ -152,7 +155,7 @@ class Site(object):
         return None
 
     def __repr__(self):
-        return "SiteConfig(%r, %r, %r)" % (self.root, self.output_root, self.site_data)
+        return "Site[%r](%r, %r)" % (self.name, self.root, self.output_root)
 
     def _parse(self, data):
         """Load pages to be generated"""
