@@ -11,7 +11,7 @@ from sand.entities import RenderEntity
 # provide an easy way to, for example, recolour SVGs to that skinning and theming can be done on the fly.
 class SvgResource(RenderEntity):
     def __init__(self, site, target, source=None, config=None, **kwargs):
-        super().__init__(site, source, target, **kwargs)
+        super().__init__(site, target, source, **kwargs)
         if config is None:
             self.config = ConfigFactory.parse_file(self.source_path)
         else:
