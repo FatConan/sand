@@ -43,6 +43,50 @@ class ConfigLoader:
         # Initialise Site
         return Site(path, conf, name)
 
+    def parse_sites_array(self, configs, path, conf=None, config_overrides=None):
+        """
+        There are now two ways to represent sites, this method involves adding an array names "sites" to the config
+        with the configuration for each site as elements withing it. This method parses that array and adds each site
+        as an automatically named site to our configuration list.
+
+        :param configs: The list of the current site configurations
+        :param path: The path to the project
+        :param conf: The configuration object being interpreted
+        :param config_overrides: And command line specified configuration overrides
+        :return:
+        """
+        for i, site_data in enumerate(conf["sites"]):
+            # Check for a valid configuration then instantiate the appropriate site from the site_data
+            # with a generated name of "Unnamed-{index}"
+            if self.is_valid_dict(site_data):
+                configs.append(
+                    self.from_individual_dict(path, site_data, config_overrides, name="Unnamed-%d" % i)
+                )
+            else:
+                warnings.warn("Invalid definition found for site %d" % i)
+
+    def parse_named_sites(self, configs, path, conf=None, config_overrides=None):
+        """ There are now two ways to represent sites, this method involves adding each site under a naming key to the
+        config. This method parses that dictionary of keys and site configs and adds each site
+        as an entry to the configs with the corresponding key as the site's name.
+
+        :param configs: The list of the current site configurations
+        :param path: The path to the project
+        :param conf: The configuration object being interpreted
+        :param config_overrides: And command line specified configuration overrides
+        :return:
+        """
+        # Look at the root of the config for named sites this time and iterate over them
+        for name, site_data in conf.items():
+            #If they appear valid add them the configs list
+            if self.is_valid_dict(site_data):
+                configs.append(
+                    self.from_individual_dict(path, site_data, config_overrides, name=name)
+                )
+            else:
+                warnings.warn("Invalid definition found for site \"%s\"" % name)
+
+
     def from_dict(self, path, conf=None, config_overrides=None):
         configs = []
         if conf is None:
@@ -54,27 +98,14 @@ class ConfigLoader:
             exit(1)
 
         #We need to have a properly formatted list of sites so make sure that's a thing
-        try:
-            for i, site_data in enumerate(conf["sites"]):
-                #And if it is, then instantiate the appropriate site from the site_data
-                if self.is_valid_dict(site_data):
-                    configs.append(
-                        self.from_individual_dict(path, site_data, config_overrides, name="Unnamed-%d" % i)
-                    )
-                else:
-                    warnings.warn("Invalid definition found for site %d" % i)
-        except KeyError:
-            for name, site_data in conf.items():
-                if self.is_valid_dict(site_data):
-                    configs.append(
-                        self.from_individual_dict(path, site_data, config_overrides, name=name)
-                    )
-                else:
-                    warnings.warn("Invalid definition found for site \"%s\"" % name)
+        if "sites" in conf:
+            self.parse_sites_array(configs, path, conf, config_overrides)
+        else:
+            self.parse_named_sites(configs, path, conf, config_overrides)
 
-            if not configs:
-                print("Error: No site entries found configuration")
-                exit(1)
+        if not configs:
+            print("Error: No site entries found configuration")
+            exit(1)
 
         return configs
 
