@@ -28,7 +28,7 @@ setup(
         'Markdown>=3.8',
         'MarkupSafe>=3.0.2',
         'pyhocon>=0.3.61',
-        "urllib3==2.5.0",
+        "urllib3==2.6.0",
         'pathlib2>=2.3.7.post1',
         'rfeed>=1.1.1',
         'six>=1.17.0',
