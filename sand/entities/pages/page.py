@@ -1,5 +1,5 @@
+from loguru import logger
 import os
-import warnings
 
 from jinja2.exceptions import TemplateNotFound
 
@@ -81,6 +81,7 @@ class Page(RenderEntity, ContentLoadingEntity):
         self.page_data.update(local_template_data)
 
     def render(self, environment, compress=True, **kwargs):
+        self._debug()
         try:
             os.makedirs(os.path.split(self.target_path)[0], exist_ok=True)
             with open(self.target_path, "w") as target_file:
@@ -92,11 +93,11 @@ class Page(RenderEntity, ContentLoadingEntity):
                 target_file.write(output)
 
         except TemplateNotFound as tnf:
-            warnings.warn("Requested template (%s) not found, skipping" % tnf)
+            logger.warning(f"Requested template ({tnf}) not found, skipping")
 
         except KeyError as ke:
             if str(ke) == '\'template\'':
-                warnings.warn('Missing template, rendering markdown only for (%s)' % self.source_path)
+                logger.warning(f"Missing template, rendering markdown only for ({self.source_path})")
                 os.makedirs(os.path.split(self.target_path)[0], exist_ok=True)
                 with open(self.target_path, "w") as target_file:
                     output = self.to_dict(environment)["content"]

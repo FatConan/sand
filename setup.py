@@ -32,7 +32,8 @@ setup(
         'pathlib2>=2.3.7.post1',
         'rfeed>=1.1.1',
         'six>=1.17.0',
-        'htmlmin2>=0.1.13'
+        'htmlmin2>=0.1.13',
+        'loguru>=0.7.3'
     ],
     entry_points={
         'console_scripts': [

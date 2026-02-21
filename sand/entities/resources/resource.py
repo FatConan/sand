@@ -13,6 +13,7 @@ class PlainResource(RenderEntity):
         return self.source is not None and self.target is not None
 
     def render(self, environment, **kwargs):
+        self._debug()
         directory = os.path.split(self.target_path)[0]
         os.makedirs(directory, exist_ok=True)
 

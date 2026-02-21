@@ -1,3 +1,4 @@
+from loguru import logger
 import os
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -40,7 +41,7 @@ class SiteDataProcessorPlugin(SandPlugin):
 
         site.templates = [os.path.join(site.root, template) for template in site_data.get("templates", [])]
         for t in site.templates:
-            print("Found template %s" % t)
+            logger.info(f"Found template {t}")
 
         site.environment = Environment(
             loader=FileSystemLoader(site.templates),

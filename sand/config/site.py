@@ -1,3 +1,4 @@
+from loguru import logger
 import importlib
 import os
 import shutil
@@ -23,7 +24,7 @@ PLUGINS_MODULE = "sandplugins"
 
 class Site:
     def __init__(self, root, site_data, name=None):
-        print("Initialising Site", name)
+        logger.info(f"Initialising Site: {name}")
 
         self.name = name
 
@@ -142,16 +143,16 @@ class Site:
             root_path = os.path.abspath(root)
             sys.path.append(root_path)
             instance = importlib.import_module("%s.%s" % (PLUGINS_MODULE, module), package=PLUGINS_MODULE).Plugin()
-            print("External plugin '%s' loaded" % module)
+            logger.info("External plugin '%s' loaded" % module)
             return instance
         except ImportError:
             # Try the builtins
             try:
                 instance = importlib.import_module("sand.plugin.builtins.%s" % module).Plugin()
-                print("Built-in plugin '%s' loaded" % module)
+                logger.info("Built-in plugin '%s' loaded" % module)
                 return instance
             except ImportError:
-                warnings.warn("Unable to load plugin '%s'" % module)
+                logger.warning("Unable to load plugin '%s'" % module)
         return None
 
     def __repr__(self):
@@ -178,12 +179,12 @@ class Site:
             if page.validate():
                 page.render(self.environment, compress=compress)
             else:
-                warnings.warn("Page %s did not pass validation and won't be rendered", page)
+                logger.warning("Page %s did not pass validation and won't be rendered", page)
 
         for resource in self.resources:
             progress.spinner("RESOURCES %s")
             if resource.validate():
                 resource.render(self.environment)
             else:
-                warnings.warn("Resource %s did not pass validation and won't be rendered", resource)
+                logger.warning("Resource %s did not pass validation and won't be rendered", resource)
 

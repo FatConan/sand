@@ -1,5 +1,5 @@
+from loguru import logger
 import os
-import warnings
 
 class RenderEntity:
     # Originally this was site, source, target, ... which made sense at the time, however it has become
@@ -18,6 +18,9 @@ class RenderEntity:
 
     def __repr__(self):
         return "%s(%r, %r)" % (self.__class__.__name__, self.source, self.target)
+
+    def _debug(self):
+        logger.debug(f"Rendering: {self.__class__.__name__} -> {self.source_file} to {self.target_file}")
 
     def validate(self):
         """
@@ -61,4 +64,4 @@ class RenderEntity:
         return None
 
     def render(self, environment, **kwargs):
-        warnings.warn("No-op renderer selected, please check your configuration")
+        logger.warning("No-op renderer selected, please check your configuration")

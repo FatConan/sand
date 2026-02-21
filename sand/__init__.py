@@ -1,3 +1,4 @@
+from loguru import logger
 import json
 import os
 import click
@@ -39,7 +40,7 @@ def main(project_location, *args, **kwargs):
 def perform_render(sites, compress):
     # Render
     for i, site in enumerate(sites):
-        print("Rendering - %s to %s" % (site.root, site.output_root))
+        logger.info(f"Rendering - {site.root} to {site.output_root}")
         site.render(compress)
 
 

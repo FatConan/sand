@@ -8,6 +8,7 @@ class ScssResource(RenderEntity):
         super().__init__(site, target, source, **kwargs)
 
     def render(self, environment, **kwargs):
+        self._debug()
         directory = os.path.split(self.target_path)[0]
         os.makedirs(directory, exist_ok=True)
 

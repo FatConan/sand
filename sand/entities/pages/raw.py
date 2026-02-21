@@ -1,5 +1,6 @@
-from sand.entities import RenderEntity
 import os
+
+from sand.entities import RenderEntity
 from sand.entities.pages.content_loading_entity import ContentLoadingEntity
 
 
@@ -20,7 +21,7 @@ class RawContent(RenderEntity, ContentLoadingEntity):
         self.raw_content = self.load_raw_content(self.source_path, self.page_data)
 
     def render(self, environment, **kwargs):
-        print('Rendering raw for (%s)' % self.source_path)
+        self._debug()
         os.makedirs(os.path.split(self.target_path)[0], exist_ok=True)
         with open(self.target_path, "w") as target_file:
             target_file.write(self.raw_content)

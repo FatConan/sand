@@ -1,3 +1,4 @@
+from loguru import logger
 import http.server
 import socketserver
 import threading
@@ -27,12 +28,12 @@ class Server(threading.Thread):
             self.server.daemon = True
             self.server.start()
 
-            print("Serving site %s at localhost:%d" % (self.site.root, self.port))
+            logger.info(f"Serving site {self.site.root} at localhost:{self.port}")
 
             while not self.stop_event.is_set():
                 sleep(5)
 
-            print("Site %s at localhost:%d shutting down..." % (self.site.root, self.port))
+            logger.info(f"Site {self.site.root} at localhost:{self.port} shutting down...")
             server.shutdown()
             self.server.join()
 
@@ -43,7 +44,7 @@ class Servers:
         self.servers = {}
 
     def stop_servers(self, stop_event):
-        print("Stopping servers...")
+        logger.info("Stopping servers...")
         stop_event.set()
         for server in self.servers.values():
             server.join()
