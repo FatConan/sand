@@ -1,5 +1,4 @@
 import os
-import pathlib
 import warnings
 
 from jinja2.exceptions import TemplateNotFound

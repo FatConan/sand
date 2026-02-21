@@ -1,4 +1,8 @@
-class SandPlugin:
+from abc import ABC, abstractmethod
+
+class SandPlugin(ABC):
+    """An abstract base class for plugin classes to the Sand engine. """
+
     def configure(self, site_data, site):
         """
         This method should be overridden to provide any context-specific configuration that
@@ -8,14 +12,25 @@ class SandPlugin:
 
         :param site_data: the configuration dictionary for the current site
         :param site: the current site
-        :return:
         """
         pass
 
     def parse(self, site_data, site):
+        """
 
+        :param site_data:
+        :param site:
+        :return:
+        """
         pass
 
     def add_render_context(self, page, environment, data):
+        """
+
+        :param page:
+        :param environment:
+        :param data:
+        :return:
+        """
         pass
 

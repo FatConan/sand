@@ -1,6 +1,5 @@
 from sand.entities import RenderEntity
 import os
-import pathlib
 from sand.entities.pages.content_loading_entity import ContentLoadingEntity
 
 

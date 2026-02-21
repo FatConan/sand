@@ -9,8 +9,8 @@ class Plugin(SandPlugin):
         return calendar.Calendar().monthdatescalendar(year, month)
 
     def get_day_events(self, date):
-        day_events = (self.events.get("%d" % date.year, {}) \
-                      .get("%d" % date.month, {}) \
+        day_events = (self.events.get("%d" % date.year, {})
+                      .get("%d" % date.month, {})
                       .get("%d" % date.day, []))
         return day_events
 

@@ -1,7 +1,7 @@
 import os
 import warnings
 
-class RenderEntity(object):
+class RenderEntity:
     # Originally this was site, source, target, ... which made sense at the time, however it has become
     # clear that there are frequent use cases where the source may be None, in which case it makes sense
     # to swap them so that we can override __init__ in subclasses to make source optional
