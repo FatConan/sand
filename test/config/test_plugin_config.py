@@ -1,5 +1,3 @@
-import pytest
-
 from sand.config import Site, ConfigLoader, SiteDataProcessorPlugin
 from sand.plugin.builtins.es6css import Plugin as Es6Plugin
 

@@ -6,7 +6,6 @@ def test_empty_site_relative_path():
     site = Site("./root", {})
     assert site.root == "./root/."
 
-
 def test_basic_site_definition():
     path = "."
     site_data = {
@@ -27,7 +26,6 @@ def test_basic_site_definition():
     }
     site = ConfigLoader().from_individual_dict(path, site_data)
     assert site.root == "./."
-
 
 def test_basic_multiple_site_config():
     path = "."

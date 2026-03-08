@@ -7,6 +7,7 @@ import uuid
 import warnings
 import htmlmin
 import markdown
+import datetime
 from jinja2 import environment
 
 from sand.config.default.site_data_processor import SiteDataProcessorPlugin as DefaultPlugin
@@ -86,6 +87,12 @@ class Site:
             plugin.configure(site_data, self)
 
         self._parse(site_data)
+
+    def stat(self, path):
+        return os.stat(os.path.join(self.root, path))
+
+    def created(self, path):
+        return datetime.datetime.fromtimestamp(self.stat(path).st_ctime)
 
     def minify(self, raw_html):
         return self.minifier.minify(raw_html)
