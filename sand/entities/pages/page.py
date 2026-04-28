@@ -1,14 +1,18 @@
 from loguru import logger
 import os
 
+from jinja2 import Environment
 from jinja2.exceptions import TemplateNotFound
 
 from sand.entities import RenderEntity
 from sand.entities.pages.content_loading_entity import ContentLoadingEntity
+from typing import TYPE_CHECKING
 
+if TYPE_CHECKING:
+    from sand.config.site import Site
 
 class Page(RenderEntity, ContentLoadingEntity):
-    def __init__(self, site, target, source=None, config=None, **kwargs):
+    def __init__(self, site:"Site", target:str, source:str=None, config:dict=None, **kwargs):
         super().__init__(site, target, source, **kwargs)
         self.page_data = {}
         #The content as read from the page file
@@ -59,7 +63,7 @@ class Page(RenderEntity, ContentLoadingEntity):
 
         return data
 
-    def data(self, key, default=None, conversion=lambda x: x):
+    def data(self, key:str, default:str=None, conversion=lambda x: x):
         return conversion(self.page_data.get(key, default))
 
     def convert_to_template_html(self):
@@ -80,7 +84,7 @@ class Page(RenderEntity, ContentLoadingEntity):
                 local_template_data[key] = value
         self.page_data.update(local_template_data)
 
-    def render(self, environment, compress=True, **kwargs):
+    def render(self, environment:Environment, compress=True, **kwargs):
         self._debug()
         try:
             os.makedirs(os.path.split(self.target_path)[0], exist_ok=True)

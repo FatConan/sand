@@ -1,9 +1,15 @@
-from abc import ABC, abstractmethod
+from abc import ABC
+from jinja2 import Environment
+from typing import TYPE_CHECKING, Union
+
+if TYPE_CHECKING:
+    from sand.config.site import Site
+    from sand.entities.pages import Page, RawContent
 
 class SandPlugin(ABC):
     """An abstract base class for plugin classes to the Sand engine. """
 
-    def configure(self, site_data, site):
+    def configure(self, site_data:dict, site:"Site"):
         """
         This method should be overridden to provide any context-specific configuration that
         the plugin might require, or to configure the site or site_data with requirements
@@ -15,16 +21,16 @@ class SandPlugin(ABC):
         """
         pass
 
-    def parse(self, site_data, site):
+    def parse(self, site_data:dict, site:"Site"):
         """
 
         :param site_data:
         :param site:
-        :return:
+        :return:S
         """
         pass
 
-    def add_render_context(self, page, environment, data):
+    def add_render_context(self, page:Union["Page", "RawContent"], environment:Environment, data:"Site"):
         """
 
         :param page:

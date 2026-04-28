@@ -1,19 +1,19 @@
 import os
 import pathlib
-
-from sand.entities import RenderEntity
+from typing import Union
 
 class TargetUrlParts:
     def __init__(self, target_url, target_url_parts):
         self.target_url = target_url
         self.target_url_parts = target_url_parts
 
-    @classmethod
-    def blank(cls):
+    @staticmethod
+    def blank():
         return TargetUrlParts(None, [])
 
 class ContentLoadingEntity:
-    def load_raw_content(self, source_path, page_data):
+    @staticmethod
+    def load_raw_content(source_path:str, page_data:dict) -> Union[str|None]:
         raw_content = None
 
         if source_path is not None:
@@ -26,7 +26,8 @@ class ContentLoadingEntity:
 
         return raw_content
 
-    def target_url_parse(self, target):
+    @staticmethod
+    def target_url_parse(target:str):
         if target is not None:
             target_url = pathlib.PurePosixPath("/", target)
             target_url_parts = os.path.split(target_url)

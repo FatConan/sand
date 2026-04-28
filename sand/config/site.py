@@ -4,17 +4,18 @@ import os
 import shutil
 import sys
 import uuid
-import warnings
 import htmlmin
 import markdown
 import datetime
-from jinja2 import environment
+
+from typing import Union
 
 from sand.config.default.site_data_processor import SiteDataProcessorPlugin as DefaultPlugin
 from sand.entities.pages.__init__ import *
 from sand.entities.resources.__init__ import *
 from sand.entities.__init__ import RenderEntity as DefaultRenderEntity
 from sand.helpers.progress import Progress
+from sand.plugin import SandPlugin
 
 #Define some string constants
 RESOURCES = "resources"
@@ -22,28 +23,42 @@ PAGES = "pages"
 PLUGINS = "plugins"
 PLUGINS_MODULE = "sandplugins"
 
+#Define the renderers for the default entitie of various types
+DEFAULT_RENDER_ENTITIES =  {
+    RESOURCES: {
+        "less": LessResource,
+        "scss": ScssResource,
+        None: PlainResource,
+    },
+    PAGES: {
+        "raw": RawContent,
+        None: Page
+    }
+}
 
 class Site:
-    def __init__(self, root, site_data, name=None):
+    # The site environment is jinja2 Environment configured on a per site basis and instantiated from within
+    # the SiteDataProcessorPlugin (in the parse method)
+    environment = None
+
+    _render_entities = {}
+    # Many of these are updated by renderers and plugins
+    pages = []
+    page_reference = {}
+    templates:list[str] = []
+    resources = []
+    overrides = {}
+
+    def __init__(self, root:str, site_data:dict, name:str=None):
         logger.info(f"Initialising Site: {name}")
 
         self.name = name
 
         # Create a dictionary of available render entity types, we can then expand this in plugins if we like
-        self._render_entities = {
-            RESOURCES: {
-                "less": LessResource,
-                "scss": ScssResource,
-                None: PlainResource,
-            },
-            PAGES: {
-                "raw": RawContent,
-                None: Page
-            }
-        }
+        self._render_entities.update(DEFAULT_RENDER_ENTITIES)
 
         #Create an extensible list of plugins
-        self._plugins = [DefaultPlugin(), ]
+        self._plugins:list[SandPlugin] = [DefaultPlugin(), ]
 
         external_plugins = site_data.get(PLUGINS, list())
 
@@ -54,17 +69,10 @@ class Site:
                 if plugin_instance is not None:
                     self._plugins.append(plugin_instance)
 
-        self.environment = environment
         self.renderer = markdown.Markdown(
             extensions=['extra', 'meta', 'toc', 'tables', 'abbr']
         )
         self.minifier = htmlmin.Minifier(remove_optional_attribute_quotes=False, reduce_boolean_attributes=False)
-
-        self.pages = []
-        self.page_reference = {}
-        self.templates = []
-        self.resources = []
-        self.overrides = {}
 
         self.root = os.path.join(root, site_data.get("root", "."))
 
@@ -100,7 +108,7 @@ class Site:
     def register_renderer(self, entity_domain, entity_type, renderer_class):
         domain = self._render_entities.get(entity_domain, {})
         if entity_type in domain:
-            warnings.warn("WARNING: Replacing existing renderer for %s" % entity_type)
+            logger.warning(f"WARNING: Replacing existing renderer for {entity_type}")
         domain[entity_type] = renderer_class
         self._render_entities[entity_domain] = domain
 
@@ -142,7 +150,8 @@ class Site:
     def plugins(self):
         return self._plugins
 
-    def load_plugin(self, root, module):
+    @staticmethod
+    def load_plugin(root:str, module:str) -> Union[SandPlugin, None]:
         # Plugins may be loaded from the project or from the builtins. Check the externals first then
         # try the builtins folder
 

@@ -4,8 +4,9 @@ import os
 import click
 
 from sand.config import ConfigLoader
+from sand.config.site import Site
 
-def main_processor(sites, serve=False, compress=True, port=9000):
+def main_processor(sites:list[Site], serve:bool=False, compress:bool=True, port:int=9000):
     perform_render(sites, compress)
 
     if serve:
@@ -37,20 +38,20 @@ def main(project_location, *args, **kwargs):
         create_new_site(site, project_location)
 
 
-def perform_render(sites, compress):
+def perform_render(sites:list[Site], compress:bool):
     # Render
     for i, site in enumerate(sites):
         logger.info(f"Rendering - {site.root} to {site.output_root}")
         site.render(compress)
 
 
-def serve_render(sites, port=9000):
+def serve_render(sites:list[Site], port:int=9000):
     from .server.test_server import Servers
     servers = Servers(port=port)
     servers.for_sites(sites)
 
 
-def create_new_page(page):
+def create_new_page(page:str):
     from .builder import components as builder_components
     # Generate a new page
     if not os.path.exists(page):

@@ -6,11 +6,17 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from sand.plugin import SandPlugin
 from sand.helpers.wildcard_processor import process_wildcards as helper_wildcard_processor
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from sand.config.site import Site
+
 class SiteDataProcessorPlugin(SandPlugin):
     def __init__(self):
         pass
 
-    def process_wildcards(self, entities, site):
+    @staticmethod
+    def process_wildcards(entities:list[dict], site:"Site"):
         processed_entities = []
 
         for entity in entities:
@@ -29,7 +35,7 @@ class SiteDataProcessorPlugin(SandPlugin):
                     processed_entities.append(entity)
         return processed_entities
 
-    def parse(self, site_data, site):
+    def parse(self, site_data:dict, site:"Site"):
         """
         Process the configuration from site_data to set up the jinja2 templates and create add all the pages
         and resources declared there.
