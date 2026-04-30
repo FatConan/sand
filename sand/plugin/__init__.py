@@ -30,7 +30,7 @@ class SandPlugin(ABC):
         """
         pass
 
-    def add_render_context(self, page:Union["Page", "RawContent"], environment:Environment, data:"Site"):
+    def add_render_context(self, page:Union["Page", "RawContent"], environment:Environment, data:Dict):
         """
 
         :param page:

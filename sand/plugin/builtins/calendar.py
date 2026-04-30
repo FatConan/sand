@@ -3,9 +3,8 @@ from datetime import date
 
 from sand.plugin import SandPlugin
 
-from typing import TYPE_CHECKING, List, Dict
-if TYPE_CHECKING:
-    from sand.config.site import Site
+from typing import List
+
 
 class Plugin(SandPlugin):
     config_options = {}
@@ -23,11 +22,11 @@ class Plugin(SandPlugin):
 
     def get_week_events(self, week_dates:List[date]):
         events = []
-        for date in week_dates:
-            events += self.get_day_events(date)
+        for d in week_dates:
+            events += self.get_day_events(d)
         return events
 
-    def configure(self, site_data:Dict, site:"Site"):
+    def configure(self, site_data, site):
         self.config_options = site_data.get("calendar", {})
         self.events = self.config_options.get("events", {})
 
