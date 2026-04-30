@@ -6,7 +6,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from sand.plugin import SandPlugin
 from sand.helpers.wildcard_processor import process_wildcards as helper_wildcard_processor
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Dict, AnyStr
 
 if TYPE_CHECKING:
     from sand.config.site import Site
@@ -16,7 +16,7 @@ class SiteDataProcessorPlugin(SandPlugin):
         pass
 
     @staticmethod
-    def process_wildcards(entities:list[dict], site:"Site"):
+    def process_wildcards(entities:List[Dict], site:"Site"):
         processed_entities = []
 
         for entity in entities:
@@ -35,7 +35,7 @@ class SiteDataProcessorPlugin(SandPlugin):
                     processed_entities.append(entity)
         return processed_entities
 
-    def parse(self, site_data:dict, site:"Site"):
+    def parse(self, site_data:Dict, site:"Site"):
         """
         Process the configuration from site_data to set up the jinja2 templates and create add all the pages
         and resources declared there.
@@ -45,16 +45,16 @@ class SiteDataProcessorPlugin(SandPlugin):
         :return:
         """
 
-        site.templates = [os.path.join(site.root, template) for template in site_data.get("templates", [])]
-        for t in site.templates:
+        site.templates([os.path.join(site.root, template) for template in site_data.get("templates", [])])
+        for t in site.templates():
             logger.info(f"Found template {t}")
 
-        site.environment = Environment(
-            loader=FileSystemLoader(site.templates),
+        site.environment(Environment(
+            loader=FileSystemLoader(site.templates()),
             autoescape=select_autoescape(["html", "xml"])
-        )
+        ))
 
-        site.overrides = site_data.get("overrides", {})
+        site.overrides(site_data.get("overrides", {}))
 
         processed_pages = self.process_wildcards(site_data.get("pages", []), site)
         for page_dict in processed_pages:

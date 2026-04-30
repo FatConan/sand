@@ -8,13 +8,15 @@ import htmlmin
 import markdown
 import datetime
 
-from typing import Union
+from typing import Union, List, Dict, AnyStr
 
+from jinja2 import Environment
+
+from sand.config.helpers import CONFIG_NULL, ConfigNull
 from sand.config.default.site_data_processor import SiteDataProcessorPlugin as DefaultPlugin
 from sand.entities.pages.__init__ import *
 from sand.entities.resources.__init__ import *
 from sand.entities.__init__ import RenderEntity as DefaultRenderEntity
-from sand.helpers.progress import Progress
 from sand.plugin import SandPlugin
 
 #Define some string constants
@@ -39,17 +41,16 @@ DEFAULT_RENDER_ENTITIES =  {
 class Site:
     # The site environment is jinja2 Environment configured on a per site basis and instantiated from within
     # the SiteDataProcessorPlugin (in the parse method)
-    environment = None
-
+    _environment = None
     _render_entities = {}
-    # Many of these are updated by renderers and plugins
+    _templates:List[str] = []
+    _overrides = {}
+
+    resources = []
     pages = []
     page_reference = {}
-    templates:list[str] = []
-    resources = []
-    overrides = {}
 
-    def __init__(self, root:str, site_data:dict, name:str=None):
+    def __init__(self, root:AnyStr, site_data:Dict, name:AnyStr=None):
         logger.info(f"Initialising Site: {name}")
 
         self.name = name
@@ -58,7 +59,7 @@ class Site:
         self._render_entities.update(DEFAULT_RENDER_ENTITIES)
 
         #Create an extensible list of plugins
-        self._plugins:list[SandPlugin] = [DefaultPlugin(), ]
+        self._plugins:List[SandPlugin] = [ ]
 
         external_plugins = site_data.get(PLUGINS, list())
 
@@ -68,6 +69,8 @@ class Site:
                 plugin_instance = self.load_plugin(root, plugin)
                 if plugin_instance is not None:
                     self._plugins.append(plugin_instance)
+
+        self._plugins.append(DefaultPlugin())
 
         self.renderer = markdown.Markdown(
             extensions=['extra', 'meta', 'toc', 'tables', 'abbr']
@@ -96,16 +99,39 @@ class Site:
 
         self._parse(site_data)
 
-    def stat(self, path):
+    def environment(self, environment:Union[Environment, ConfigNull]=CONFIG_NULL):
+        """get or set the jinja2 environment used to render the templates and content of the site"""
+        if not isinstance(environment, ConfigNull):
+            self._environment = environment
+        return self._environment
+
+    def templates(self, templates:Union[List[AnyStr], ConfigNull]=CONFIG_NULL):
+        """Set the location list of templates to be available to the jinja renderer"""
+        if not isinstance(templates, ConfigNull):
+            self.add_templates(templates)
+        return self._templates
+
+    def add_templates(self, templates:List[AnyStr]):
+        """Add templates to the templates list, the plugins can use this to add their own templates"""
+        logger.debug(f"Adding template folders {templates}")
+        self._templates.extend(templates)
+
+    def overrides(self, overrides:Union[Dict, ConfigNull]=CONFIG_NULL):
+        """Set the overrides for the Site configuration"""
+        if not isinstance(overrides, ConfigNull):
+            self._overrides = overrides
+        return self._overrides
+
+    def stat(self, path:AnyStr):
         return os.stat(os.path.join(self.root, path))
 
-    def created(self, path):
+    def created(self, path:AnyStr):
         return datetime.datetime.fromtimestamp(self.stat(path).st_ctime)
 
-    def minify(self, raw_html):
+    def minify(self, raw_html:AnyStr):
         return self.minifier.minify(raw_html)
 
-    def register_renderer(self, entity_domain, entity_type, renderer_class):
+    def register_renderer(self, entity_domain:AnyStr, entity_type:AnyStr, renderer_class:type):
         domain = self._render_entities.get(entity_domain, {})
         if entity_type in domain:
             logger.warning(f"WARNING: Replacing existing renderer for {entity_type}")
@@ -125,12 +151,12 @@ class Site:
         renderer = domain.get(requested_type, DefaultRenderEntity)
         return renderer(self, **entity_dict)
 
-    def add_resource(self, resource_dict):
+    def add_resource(self, resource_dict:Dict):
         #Grab the correct resource type and add it to the list
         resource = self.render_entity_selection(RESOURCES, resource_dict)
         self.resources.append(resource)
 
-    def add_page(self, page_dict):
+    def add_page(self, page_dict:Dict):
         #Grab the correct page type and add it to the list
         page = self.render_entity_selection(PAGES, page_dict)
         self.pages.append(page)
@@ -151,7 +177,7 @@ class Site:
         return self._plugins
 
     @staticmethod
-    def load_plugin(root:str, module:str) -> Union[SandPlugin, None]:
+    def load_plugin(root:AnyStr, module:AnyStr) -> Union[SandPlugin, None]:
         # Plugins may be loaded from the project or from the builtins. Check the externals first then
         # try the builtins folder
 
@@ -172,14 +198,14 @@ class Site:
         return None
 
     def __repr__(self):
-        return "Site[%r](%r, %r)" % (self.name, self.root, self.output_root)
+        return f"Site[{self.name}]({self.root}, {self.output_root})"
 
-    def _parse(self, data):
+    def _parse(self, data:Dict):
         """Load pages to be generated"""
         for plugin in self._plugins:
             plugin.parse(data, self)
 
-    def render(self, compress=True):
+    def render(self, compress:bool=True):
         """
         Render the site's pages and resources
 
@@ -188,19 +214,15 @@ class Site:
         """
 
         shutil.rmtree(os.path.abspath(self.output_root), ignore_errors=True)
-        progress = Progress()
-
         for page in self.pages:
-            progress.spinner("PAGES %s")
             if page.validate():
-                page.render(self.environment, compress=compress)
+                page.render(self.environment(), compress=compress)
             else:
                 logger.warning("Page %s did not pass validation and won't be rendered", page)
 
         for resource in self.resources:
-            progress.spinner("RESOURCES %s")
             if resource.validate():
-                resource.render(self.environment)
+                resource.render(self.environment())
             else:
                 logger.warning("Resource %s did not pass validation and won't be rendered", resource)
 

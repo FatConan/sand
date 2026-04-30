@@ -1,7 +1,7 @@
 import glob
 import re
 import os
-import warnings
+from loguru import logger
 
 
 WILDCARD_RE = re.compile(r"([^\*]*)\*([\.]{0,1}.*)")
@@ -40,6 +40,6 @@ def process_wildcards(source, target, site):
             replacements.append(ProcessedWildcard(replace_source, replace_target, filename))
         return replacements
     elif source_match or target_match:
-        warnings.warn("Badly formed source and target pairing, %s and %s", (source, target))
+        logger.warning("Badly formed source and target pairing, %s and %s", (source, target))
     else:
         return [ProcessedWildcard(source, target)]

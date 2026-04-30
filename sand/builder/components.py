@@ -1,3 +1,6 @@
+from typing import AnyStr
+
+
 PAGE_TEMPLATE = """title: [Add a page title]
 template: [The template used to render]
 
@@ -9,7 +12,7 @@ contained in a folder using wildcard rules to render.
 """
 
 
-def site_conf_basic(project_location):
+def site_conf_basic(project_location:AnyStr):
     return {"sites": [
         {
             "root": project_location,

@@ -1,11 +1,16 @@
 from loguru import logger
+from abc import ABC
 import os
+from typing import TYPE_CHECKING, Union
 
-class RenderEntity:
+if TYPE_CHECKING:
+    from sand.config.site import Site
+
+class RenderEntity(ABC):
     # Originally this was site, source, target, ... which made sense at the time, however it has become
     # clear that there are frequent use cases where the source may be None, in which case it makes sense
     # to swap them so that we can override __init__ in subclasses to make source optional
-    def __init__(self, site, target, source, **kwargs):
+    def __init__(self, site:"Site", target:str, source:Union[str, None], **kwargs):
         self.site = site
         self.source = source
         self.target = target
@@ -15,6 +20,10 @@ class RenderEntity:
 
         self.source_path = self.default_path(self.source)
         self.target_path = self.default_path(self.target, is_output=True)
+
+        self.target_url = None
+        self.target_url_parts = []
+
 
     def __repr__(self):
         return "%s(%r, %r)" % (self.__class__.__name__, self.source, self.target)

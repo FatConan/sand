@@ -2,6 +2,7 @@ from loguru import logger
 import os
 from sand.config.site import Site
 from pyhocon import ConfigFactory
+from typing import AnyStr, List, Dict
 
 
 class ConfigLoader:
@@ -27,7 +28,7 @@ class ConfigLoader:
         return True
 
     @staticmethod
-    def from_individual_dict(path:str, conf:dict=None, config_overrides:dict=None, name:str=None) -> Site:
+    def from_individual_dict(path:AnyStr, conf:Dict=None, config_overrides:Dict=None, name:AnyStr=None) -> Site:
         """
         Create a site instance from the configuration information in the site.conf/site.json file.
 
@@ -51,7 +52,7 @@ class ConfigLoader:
         return site
 
     @staticmethod
-    def parse_sites_array(configs:list[Site], path:str, conf:dict=None, config_overrides:dict=None) -> None:
+    def parse_sites_array(configs:List[Site], path:AnyStr, conf:Dict=None, config_overrides:Dict=None) -> None:
         """
         There are now two ways to represent sites, this method involves adding an array names "sites" to the config
         with the configuration for each site as elements withing it. This method parses that array and adds each site
@@ -74,7 +75,7 @@ class ConfigLoader:
                 logger.warning("Invalid definition found for site %d" % i)
 
     @staticmethod
-    def parse_named_sites(configs:list[Site], path:str, conf:dict=None, config_overrides:dict=None) -> None:
+    def parse_named_sites(configs:List[Site], path:AnyStr, conf:Dict=None, config_overrides:Dict=None) -> None:
         """ There are now two ways to represent sites, this method involves adding each site under a naming key to the
         config. This method parses that dictionary of keys and site configs and adds each site
         as an entry to the configs with the corresponding key as the site's name.
@@ -99,7 +100,7 @@ class ConfigLoader:
             logger.error("No configuration provided")
 
     @staticmethod
-    def from_dict(path, conf=None, config_overrides=None) -> list[Site]:
+    def from_dict(path:AnyStr, conf:Dict=None, config_overrides:Dict=None) -> List[Site]:
         """
         Instantiate a list of Sites from a provided conf dictionary (and command line overrides if required)
         and return that list of Sites
@@ -129,7 +130,7 @@ class ConfigLoader:
         return configs
 
     @staticmethod
-    def load(path:str, config_overrides:dict=None) -> list[Site]:
+    def load(path:AnyStr, config_overrides:Dict=None) -> List[Site]:
         """
         Hunt for one of the permitted configurations files (site.conf, site.json) and then attempt
         to load and parse it to create the appropriate Site instances.

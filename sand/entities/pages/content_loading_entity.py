@@ -3,7 +3,7 @@ import pathlib
 from typing import Union
 
 class TargetUrlParts:
-    def __init__(self, target_url, target_url_parts):
+    def __init__(self, target_url:Union[str, None], target_url_parts:list[str]):
         self.target_url = target_url
         self.target_url_parts = target_url_parts
 
@@ -29,7 +29,7 @@ class ContentLoadingEntity:
     @staticmethod
     def target_url_parse(target:str):
         if target is not None:
-            target_url = pathlib.PurePosixPath("/", target)
-            target_url_parts = os.path.split(target_url)
+            target_url = str(pathlib.PurePosixPath("/", target))
+            target_url_parts = [f"{part}" for part in os.path.split(target_url)]
             return TargetUrlParts(target_url, target_url_parts)
         return TargetUrlParts.blank()

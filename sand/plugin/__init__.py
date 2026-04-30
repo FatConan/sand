@@ -1,6 +1,6 @@
 from abc import ABC
 from jinja2 import Environment
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Union, Dict
 
 if TYPE_CHECKING:
     from sand.config.site import Site
@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 class SandPlugin(ABC):
     """An abstract base class for plugin classes to the Sand engine. """
 
-    def configure(self, site_data:dict, site:"Site"):
+    def configure(self, site_data:Dict, site:"Site"):
         """
         This method should be overridden to provide any context-specific configuration that
         the plugin might require, or to configure the site or site_data with requirements
@@ -21,7 +21,7 @@ class SandPlugin(ABC):
         """
         pass
 
-    def parse(self, site_data:dict, site:"Site"):
+    def parse(self, site_data:Dict, site:"Site"):
         """
 
         :param site_data:

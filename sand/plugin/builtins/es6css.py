@@ -3,6 +3,10 @@ from urllib.parse import urljoin
 
 from sand.plugin import SandPlugin
 
+from typing import TYPE_CHECKING, List, Dict
+if TYPE_CHECKING:
+    from sand.config.site import Site
+
 SCRIPT_ATTRS = ["alias", "src",  "async", "crossorigin",  "defer", "integrity",  "nomodule", "referrerpolicy", "data"]
 
 class JavaScriptExtensions:
@@ -113,7 +117,7 @@ class Plugin(SandPlugin):
     def __init__(self):
         self.es6css = None
 
-    def configure(self, site_data, site):
+    def configure(self, site_data:Dict, site:"Site"):
         es6css_config = site_data.get("es6css", {})
         self.es6css = JavaScriptExtensions(site.base_url, es6css_config.get("force_base_url", False))
 
@@ -126,7 +130,8 @@ class Plugin(SandPlugin):
         for script in es6css_config.get("scripts", []):
             self.es6css.add_script(**self.grab_script_details(script))
 
-    def grab_script_details(self, script):
+    @staticmethod
+    def grab_script_details(script):
         if isinstance(script, str):
             return {"src": script}
 

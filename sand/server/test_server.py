@@ -4,7 +4,6 @@ import socketserver
 import threading
 from time import sleep
 
-
 def simple_handler(site):
     class SimpleSiteServer(http.server.SimpleHTTPRequestHandler):
         def __init__(self, *args, **kwargs):

@@ -3,6 +3,8 @@ import json
 import rfeed
 from sand.plugin import SandPlugin
 
+from typing import Any
+
 class Plugin(SandPlugin):
     @staticmethod
     def generate_feed(config, pages):
@@ -52,8 +54,7 @@ class Plugin(SandPlugin):
 
         rss_content = self.generate_feed(rss_config, page_items)
         out_path = "./rss.xml"
-        page_dict = {'source': None, 'target': out_path, "type": "raw"}
-        page_dict["config"] = {
+        page_dict:dict[str, Any] = {'source': None, 'target': out_path, "type": "raw", "config": {
             "static_content": rss_content
-        }
+        }}
         site.add_page(page_dict)

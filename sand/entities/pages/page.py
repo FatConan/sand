@@ -4,19 +4,18 @@ import os
 from jinja2 import Environment
 from jinja2.exceptions import TemplateNotFound
 
-from sand.entities import RenderEntity
-from sand.entities.pages.content_loading_entity import ContentLoadingEntity
+from sand.entities.pages.basic_content_entity import BaseContentEntity
+
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from sand.config.site import Site
 
-class Page(RenderEntity, ContentLoadingEntity):
+class Page(BaseContentEntity):
     def __init__(self, site:"Site", target:str, source:str=None, config:dict=None, **kwargs):
         super().__init__(site, target, source, **kwargs)
         self.page_data = {}
         #The content as read from the page file
-        self.raw_content = None
         self.content = None
 
         if config is not None and isinstance(config, dict):
@@ -103,12 +102,16 @@ class Page(RenderEntity, ContentLoadingEntity):
             if str(ke) == '\'template\'':
                 logger.warning(f"Missing template, rendering markdown only for ({self.source_path})")
                 os.makedirs(os.path.split(self.target_path)[0], exist_ok=True)
-                with open(self.target_path, "w") as target_file:
-                    output = self.to_dict(environment)["content"]
 
+                output = self.to_dict(environment).get("content", None)
+
+                if output is not None:
                     if compress:
-                        output = self.site.minify(output)
+                        output = str(self.site.minify(output))
+                else:
+                    output = ""
 
-                    target_file.write(output)
+                with open(self.target_path, "w") as target_file:
+                    target_file.write(str(output))
             else:
                 raise
