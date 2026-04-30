@@ -1,7 +1,7 @@
 from loguru import logger
 from abc import ABC
 import os
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Union, AnyStr
 
 if TYPE_CHECKING:
     from sand.config.site import Site
@@ -10,7 +10,7 @@ class RenderEntity(ABC):
     # Originally this was site, source, target, ... which made sense at the time, however it has become
     # clear that there are frequent use cases where the source may be None, in which case it makes sense
     # to swap them so that we can override __init__ in subclasses to make source optional
-    def __init__(self, site:"Site", target:str, source:Union[str, None], **kwargs):
+    def __init__(self, site:"Site", target:Union[AnyStr, None], source:Union[AnyStr, None], **kwargs):
         self.site = site
         self.source = source
         self.target = target
@@ -41,10 +41,12 @@ class RenderEntity(ABC):
 
         return self.target is not None and self.target != ""
 
-    def as_dict(self):
+    @staticmethod
+    def as_dict():
         return {}
 
-    def extract_filename(self, path):
+    @staticmethod
+    def extract_filename(path:Union[AnyStr, None]) -> Union[AnyStr, None]:
         """
         Extract the filename form the provided path
 
@@ -62,8 +64,9 @@ class RenderEntity(ABC):
 
         return filename
 
-    def default_path(self, path, is_output=False):
+    def default_path(self, path:Union[AnyStr, None], is_output:bool=False) -> Union[AnyStr, None]:
         root = self.site.root
+
         if is_output:
             root = self.site.output_root
 
