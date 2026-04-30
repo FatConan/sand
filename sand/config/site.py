@@ -59,9 +59,9 @@ class Site:
         self._render_entities.update(DEFAULT_RENDER_ENTITIES)
 
         #Create an extensible list of plugins
-        self._plugins:List[SandPlugin] = [ ]
+        self._plugins:List[SandPlugin] = [DefaultPlugin(), ]
 
-        external_plugins = site_data.get(PLUGINS, list())
+        external_plugins = site_data.get(PLUGINS, [])
 
         if external_plugins:
             # create a list of plugins
@@ -69,8 +69,6 @@ class Site:
                 plugin_instance = self.load_plugin(root, plugin)
                 if plugin_instance is not None:
                     self._plugins.append(plugin_instance)
-
-        self._plugins.append(DefaultPlugin())
 
         self.renderer = markdown.Markdown(
             extensions=['extra', 'meta', 'toc', 'tables', 'abbr']
