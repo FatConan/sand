@@ -75,16 +75,14 @@ class JavaScriptExtensions:
         return self.base_tag.format(extras=" ".join(['%s="%s"' % (key, value) for key, value in details_dict.items() if value]), content="")
 
     def fouc_css(self):
-        return self.base_style.format(content="html.hidden{display: none;}")
+        return self.base_style.format(content="html.hidden{visibility: hidden;}")
 
     def fouc_script(self):
         load_function = """
-        const htmlEl = document.getElementsByTagName("html")[0];
-        let classes = htmlEl.getAttribute("class") + " hidden";
-        htmlEl.setAttribute("class", classes);
+        const htmlEl = document.querySelector("html");
+        htmlEl.classList.add("hidden");
         document.addEventListener("DOMContentLoaded", () => {
-            let classes = htmlEl.getAttribute("class");
-            htmlEl.setAttribute("class", classes.replace("hidden", "")); 
+            htmlEl.classList.remove("hidden"); 
         });
         """
         return self.base_tag.format(extras="", content=load_function)
